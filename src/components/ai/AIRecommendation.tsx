@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { QuizData, AIRecommendationData, Product } from '@/types/quiz'
 import ProductCard from './ProductCard'
+import BundleOffer from './BundleOffer'
 
 interface AIRecommendationProps {
   quizData: QuizData
@@ -97,6 +98,9 @@ export default function AIRecommendation({
           </motion.div>
         ))}
       </div>
+
+      {/* Bundle Offer */}
+      <BundleOffer products={productsToShow} />
 
       <motion.div
         initial={{ opacity: 0 }}

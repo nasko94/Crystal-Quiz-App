@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Sparkles, Loader2 } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { QuizData, AIRecommendationData } from '@/types/quiz'
 import { getNeedsLabel, getAchievementLabel, getHappinessLabel } from '@/utils/zodiac'
 
@@ -122,14 +122,6 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
       <p className="text-xl text-gray-600 mb-8">
         Моля изчакай, {name}, докато нашият AI подготвя персонализираните препоръки за теб
       </p>
-
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        className="inline-block"
-      >
-        <Loader2 className="w-12 h-12 text-purple-500" />
-      </motion.div>
 
       <div className="mt-8 flex justify-center gap-2">
         {[0, 1, 2].map((i) => (
