@@ -10,12 +10,14 @@ import AchievementQuestion from './questions/AchievementQuestion'
 import NeedsQuestion from './questions/NeedsQuestion'
 import ObstaclesQuestion from './questions/ObstaclesQuestion'
 import LoadingScreen from './LoadingScreen'
+import { AIRecommendationData } from '@/types/quiz'
 
 interface QuizQuestionProps {
   step: number
   quizData: QuizData
   onUpdate: (data: Partial<QuizData>) => void
   onNext: () => void
+  onRecommendationComplete?: (data: AIRecommendationData) => void
 }
 
 export default function QuizQuestion({
@@ -23,6 +25,7 @@ export default function QuizQuestion({
   quizData,
   onUpdate,
   onNext,
+  onRecommendationComplete,
 }: QuizQuestionProps) {
   const renderQuestion = () => {
     switch (step) {
@@ -82,7 +85,13 @@ export default function QuizQuestion({
           />
         )
       case 7:
-        return <LoadingScreen name={quizData.name} onComplete={onNext} />
+        return (
+          <LoadingScreen 
+            name={quizData.name} 
+            quizData={quizData} 
+            onComplete={onRecommendationComplete || ((data: AIRecommendationData) => onNext())} 
+          />
+        )
       default:
         return null
     }

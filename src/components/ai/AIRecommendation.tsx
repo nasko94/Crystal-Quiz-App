@@ -1,48 +1,55 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { QuizData } from '@/types/quiz'
+import { QuizData, AIRecommendationData, Product } from '@/types/quiz'
 import ProductCard from './ProductCard'
 
 interface AIRecommendationProps {
   quizData: QuizData
+  recommendationData: AIRecommendationData
   onContinue: () => void
 }
 
-// Mock продукти - ще се заменят с истински от AI
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Зелен Авантюрин',
-    image: '/products/aventurine.jpg',
-    price: 45.00,
-    description: 'Кристалът на възможностите и просперитета. Привлича късмет и отваря нови врати.',
-  },
-  {
-    id: '2',
-    name: 'Розов Кварц',
-    image: '/products/rose-quartz.jpg',
-    price: 38.00,
-    description: 'Камъкът на любовта и хармонията. Носи спокойствие и емоционален баланс.',
-  },
-  {
-    id: '3',
-    name: 'Аметист',
-    image: '/products/amethyst.jpg',
-    price: 52.00,
-    description: 'Кристалът на духовността и защитата. Помага за медитация и вътрешен мир.',
-  },
-]
-
 export default function AIRecommendation({
   quizData,
+  recommendationData,
   onContinue,
 }: AIRecommendationProps) {
-  // TODO: Тук ще се прави реалното AI извикване
-  const getPersonalizedMessage = () => {
-    return `Според нашият анализ ти търсиш баланс и хармония в живота си. 
-    Усещаш се готов за промяна и искаш да привлечеш повече позитивна енергия. 
-    Имаш силна интуиция и желание за личностно развитие.`
+  console.log('🎨 AIRecommendation rendered with:', recommendationData)
+  
+  // Safety check - ако няма данни, показваме съобщение
+  if (!recommendationData || !recommendationData.fullProductData || recommendationData.fullProductData.length === 0) {
+    console.warn('⚠️ No recommendation data available')
+    return (
+      <div className="card text-center">
+        <p>Зареждане на препоръките...</p>
+      </div>
+    )
+  }
+
+  // Мапваме productIds към реалните продукти чрез legacyId
+  let productsToShow: Product[] = (recommendationData.productIds || [])
+    .map(productId => {
+      // Конвертираме productId в string за сравнение
+      const searchId = String(productId)
+      return recommendationData.fullProductData.find(
+        product => String(product.legacyId) === searchId || String(product.id) === searchId
+      )
+    })
+    .filter((product): product is Product => product !== undefined)
+  
+  // Ако няма мапнати продукти, показваме първите 3 като fallback
+  if (productsToShow.length === 0) {
+    console.warn('⚠️ No products matched productIds, using first 3 as fallback')
+    productsToShow = recommendationData.fullProductData.slice(0, 3)
+  }
+  
+  console.log('📦 Product IDs to show:', recommendationData.productIds)
+  console.log('📦 Mapped products:', productsToShow.map(p => ({ id: p.id, legacyId: p.legacyId, title: p.title })))
+  
+  const handleContinue = () => {
+    console.log('🔘 User clicked "Започни разговор с AI" button')
+    onContinue()
   }
 
   return (
@@ -70,16 +77,16 @@ export default function AIRecommendation({
         className="bg-gradient-secondary p-6 rounded-2xl mb-8"
       >
         <p className="text-lg text-gray-700 leading-relaxed text-center">
-          {getPersonalizedMessage()}
+          {recommendationData.suggestion}
         </p>
       </motion.div>
 
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 text-gray-800">
-        Точно затова ние смятаме, че за теб най-подходящи в този момент са:
+        Твоите Препоръчани Кристали:
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {mockProducts.map((product, index) => (
+        {productsToShow.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 30 }}
@@ -104,7 +111,7 @@ export default function AIRecommendation({
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={onContinue}
+          onClick={handleContinue}
           className="btn-primary text-xl"
         >
           Започни разговор с AI

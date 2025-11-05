@@ -5,7 +5,7 @@ import QuizIntro from '@/components/quiz/QuizIntro'
 import QuizQuestion from '@/components/quiz/QuizQuestion'
 import AIRecommendation from '@/components/ai/AIRecommendation'
 import ChatPurchase from '@/components/chat/ChatPurchase'
-import { QuizData } from '@/types/quiz'
+import { QuizData, AIRecommendationData } from '@/types/quiz'
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -18,6 +18,7 @@ export default function Home() {
     needs: '',
     obstacles: '',
   })
+  const [recommendationData, setRecommendationData] = useState<AIRecommendationData | null>(null)
 
   const updateQuizData = (data: Partial<QuizData>) => {
     setQuizData(prev => ({ ...prev, ...data }))
@@ -25,6 +26,12 @@ export default function Home() {
 
   const nextStep = () => {
     setCurrentStep(prev => prev + 1)
+  }
+
+  const handleRecommendationComplete = (data: AIRecommendationData) => {
+    console.log('🎯 handleRecommendationComplete called with:', data)
+    setRecommendationData(data)
+    nextStep()
   }
 
   const renderStep = () => {
@@ -37,22 +44,32 @@ export default function Home() {
       case 4:
       case 5:
       case 6:
+      case 7:
         return (
           <QuizQuestion
             step={currentStep}
             quizData={quizData}
             onUpdate={updateQuizData}
             onNext={nextStep}
-          />
-        )
-      case 7:
-        return (
-          <AIRecommendation
-            quizData={quizData}
-            onContinue={nextStep}
+            onRecommendationComplete={handleRecommendationComplete}
           />
         )
       case 8:
+        if (!recommendationData) {
+          return (
+            <div className="card text-center">
+              <p>Зареждане...</p>
+            </div>
+          )
+        }
+        return (
+          <AIRecommendation
+            quizData={quizData}
+            recommendationData={recommendationData}
+            onContinue={nextStep}
+          />
+        )
+      case 9:
         return <ChatPurchase quizData={quizData} />
       default:
         return <QuizIntro onStart={nextStep} />

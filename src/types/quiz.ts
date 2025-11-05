@@ -8,12 +8,35 @@ export interface QuizData {
   obstacles: string
 }
 
+export interface ProductImage {
+  id?: string
+  src: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
 export interface Product {
   id: string
-  name: string
-  image: string
+  legacyId?: string
+  name?: string
+  title?: string
+  handle?: string
+  image?: string
+  images?: (string | ProductImage)[]
   price: number
+  compareAtPrice?: number
+  variantId?: string
+  available?: boolean
   description: string
+}
+
+export interface AIRecommendationData {
+  success: boolean
+  suggestion: string
+  productIds: string[]
+  fullProductData: Product[]
+  collectionHandle?: string
 }
 
 export interface OrderData {
@@ -27,4 +50,3 @@ export interface OrderData {
   discount: number
   total: number
 }
-
