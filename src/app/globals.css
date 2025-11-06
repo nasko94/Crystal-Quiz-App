@@ -44,3 +44,17 @@ body {
   }
 }
 
+/* Chat bubble formatting */
+.chat-bubble p {
+  margin: 0 0 0.5rem 0;
+}
+
+.chat-bubble ul,
+.chat-bubble ol {
+  margin: 0.25rem 0 0.5rem 1.25rem;
+}
+
+.chat-bubble p:last-child {
+  margin-bottom: 0;
+}
+

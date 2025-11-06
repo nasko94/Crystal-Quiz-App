@@ -186,6 +186,7 @@ export default function AIRecommendation({
         >
           <ChatInterface
             quizData={quizData}
+            recommendationData={recommendationData}
             initialMessage={initialMessage}
             onOrderComplete={handleOrderComplete}
           />
