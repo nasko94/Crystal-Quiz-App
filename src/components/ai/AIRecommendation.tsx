@@ -174,7 +174,10 @@ export default function AIRecommendation({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.6, duration: 0.5 }}
       >
-        <BundleOffer products={productsToShow} />
+        <BundleOffer 
+          products={productsToShow} 
+          onOrderComplete={handleOrderComplete}
+        />
       </motion.div>
 
       {showChat && (

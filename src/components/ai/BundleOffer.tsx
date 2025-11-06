@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Product } from '@/types/quiz'
+import OrderPopup from './OrderPopup'
 
 interface BundleOfferProps {
   products: Product[]
+  onOrderComplete?: (orderData: any) => void
 }
 
-export default function BundleOffer({ products }: BundleOfferProps) {
+export default function BundleOffer({ products, onOrderComplete }: BundleOfferProps) {
   const [timeLeft, setTimeLeft] = useState(600) // 10 минути = 600 секунди
+  const [showOrderPopup, setShowOrderPopup] = useState(false)
 
   useEffect(() => {
     if (timeLeft === 0) return
@@ -151,11 +154,26 @@ export default function BundleOffer({ products }: BundleOfferProps) {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => setShowOrderPopup(true)}
           className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition-colors"
         >
           ВЗЕМИ СЕГА
         </motion.button>
       </motion.div>
+
+      {/* Order Popup */}
+      {showOrderPopup && (
+        <OrderPopup
+          products={products}
+          onClose={() => setShowOrderPopup(false)}
+          onOrder={(orderData) => {
+            setShowOrderPopup(false)
+            if (onOrderComplete) {
+              onOrderComplete(orderData)
+            }
+          }}
+        />
+      )}
     </motion.div>
   )
 }

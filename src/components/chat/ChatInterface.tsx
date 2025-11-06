@@ -38,7 +38,7 @@ export interface ChatInterfaceProps {
   onOrderComplete: (data: any) => void
 }
 
-export default function ChatInterface({ quizData, recommendationData, initialMessage, onOrderComplete }: ChatInterfaceProps) {
+export default function ChatInterface({ quizData, recommendationData, initialMessage }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -278,25 +278,6 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
     }
   }
 
-  // Бутон за тестване на Order Summary
-  const testOrderComplete = () => {
-    onOrderComplete({
-      orderNumber: '1234',
-      firstName: 'Тест',
-      lastName: 'Тестов',
-      phone: '0898765432',
-      econt: 'Офис Еконт Виница',
-      products: [
-        { name: 'Зелен Авантюрин', price: 45.00 },
-        { name: 'Розов Кварц', price: 38.00 },
-      ],
-      subtotal: 83.00,
-      shipping: 6.00,
-      discount: 8.30,
-      total: 80.70,
-    })
-  }
-
   return (
     <div className="card max-w-4xl mx-auto">
       <div className="bg-gradient-primary text-white px-6 py-4 rounded-t-2xl -mt-8 -mx-8 mb-6">
@@ -410,16 +391,6 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
           <Send className="w-6 h-6" />
         </motion.button>
       </div>
-
-      {/* Тестов бутон - премахни след интегриране на AI */}
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={testOrderComplete}
-        className="mt-4 w-full bg-green-500 text-white py-3 rounded-xl font-semibold"
-      >
-        🧪 Тест: Преглед на Поръчка
-      </motion.button>
     </div>
   )
 }
