@@ -38,14 +38,9 @@ export default function NeedsQuestion({
   onUpdate,
   onNext,
 }: NeedsQuestionProps) {
-  const [value, setValue] = useState(needs)
-
   const handleSelect = (option: string) => {
-    setValue(option)
     onUpdate(option)
-    setTimeout(() => {
-      onNext()
-    }, 500)
+    onNext()
   }
 
   return (
@@ -68,15 +63,9 @@ export default function NeedsQuestion({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSelect(option.value)}
-                className={`
-                  p-6 rounded-2xl border-2 transition-all duration-300
-                  ${value === option.value 
-                    ? 'bg-gradient-primary text-white border-purple-600' 
-                    : 'bg-white border-purple-200 hover:border-purple-400'
-                  }
-                `}
+                className="p-6 rounded-2xl border-2 bg-white border-purple-200 hover:border-purple-400 transition-all duration-300"
               >
-                <Icon className={`w-8 h-8 mx-auto mb-3 ${value === option.value ? 'text-white' : 'text-purple-500'}`} />
+                <Icon className="w-8 h-8 mx-auto mb-3 text-purple-500" />
                 <span className="text-lg font-semibold">{option.label}</span>
               </motion.button>
             )

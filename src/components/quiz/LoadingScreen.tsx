@@ -120,7 +120,7 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
       </h2>
 
       <p className="text-xl text-gray-600 mb-8">
-        Моля изчакай, {name}, докато нашият AI подготвя персонализираните препоръки за теб
+        Моля изчакай, {name}, докато нашият кристален консултант подготвя персонализираните препоръки за теб
       </p>
 
       <div className="mt-8 flex justify-center gap-2">

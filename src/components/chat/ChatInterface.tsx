@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Bot, User } from 'lucide-react'
+import { Send, Gem, User } from 'lucide-react'
+import Image from 'next/image'
 import { QuizData } from '@/types/quiz'
 
 interface Message {
@@ -19,14 +20,7 @@ export interface ChatInterfaceProps {
 }
 
 export default function ChatInterface({ quizData, initialMessage, onOrderComplete }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: `Здравей ${quizData.name}! Виждам, че се интересуваш от препоръчаните кристали. Имаш ли някакви въпроси за тях?`,
-      sender: 'ai',
-      timestamp: new Date(),
-    }
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -49,14 +43,18 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
         sender: 'user',
         timestamp: new Date(),
       }
-      setMessages(prev => [...prev, userMessage])
+      setMessages([userMessage])
       hasAddedInitialMessage.current = true
       
       // Симулираме AI отговор след малко
       setTimeout(() => {
+        const aiResponseText = initialMessage === 'Имам Въпроси' 
+          ? 'Разбира се! Кажи ми какво те интересува?'
+          : 'Благодаря за отговора! Това е placeholder отговор. AI логиката ще бъде добавена по-късно.'
+        
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
-          text: 'Благодаря за отговора! Това е placeholder отговор. AI логиката ще бъде добавена по-късно.',
+          text: aiResponseText,
           sender: 'ai',
           timestamp: new Date(),
         }
@@ -122,8 +120,8 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
     <div className="card max-w-4xl mx-auto">
       <div className="bg-gradient-primary text-white px-6 py-4 rounded-t-2xl -mt-8 -mx-8 mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
-          <Bot className="w-8 h-8" />
-          Crystal AI Асистент
+          <Gem className="w-8 h-8" />
+          Вашият Кристален Асистент
         </h2>
       </div>
 
@@ -135,14 +133,20 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`flex gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}
             >
               <div className={`
-                flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                ${message.sender === 'ai' ? 'bg-gradient-primary' : 'bg-purple-200'}
+                flex-shrink-0 rounded-full overflow-hidden flex items-center justify-center
+                ${message.sender === 'ai' ? 'w-12 h-12 border-2 border-white shadow-md' : 'w-10 h-10 bg-purple-200'}
               `}>
                 {message.sender === 'ai' ? (
-                  <Bot className="w-6 h-6 text-white" />
+                  <Image
+                    src="/pop-up-avatar.jpg"
+                    alt="AI Avatar"
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover object-[center_-10%] scale-125"
+                  />
                 ) : (
                   <User className="w-6 h-6 text-purple-600" />
                 )}
@@ -165,10 +169,16 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex gap-3"
+            className="flex items-center gap-3"
           >
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-              <Bot className="w-6 h-6 text-white" />
+            <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md">
+            <Image
+                    src="/pop-up-avatar.jpg"
+                    alt="AI Avatar"
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover object-[center_-10%] scale-125"
+                  />
             </div>
             <div className="bg-gradient-secondary px-4 py-3 rounded-2xl">
               <div className="flex gap-1">
@@ -181,7 +191,7 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
                       repeat: Infinity,
                       delay: i * 0.2,
                     }}
-                    className="w-2 h-2 bg-purple-500 rounded-full"
+                    className="w-1.5 h-1.5 bg-purple-500 rounded-full"
                   />
                 ))}
               </div>
@@ -199,7 +209,7 @@ export default function ChatInterface({ quizData, initialMessage, onOrderComplet
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Напиши съобщение..."
-          className="input-field flex-1 py-3"
+          className="input-field flex-1 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-purple-100 hover:border-purple-300"
         />
         
         <motion.button
