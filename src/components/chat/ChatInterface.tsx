@@ -12,12 +12,13 @@ interface Message {
   timestamp: Date
 }
 
-interface ChatInterfaceProps {
+export interface ChatInterfaceProps {
   quizData: QuizData
+  initialMessage?: string
   onOrderComplete: (data: any) => void
 }
 
-export default function ChatInterface({ quizData, onOrderComplete }: ChatInterfaceProps) {
+export default function ChatInterface({ quizData, initialMessage, onOrderComplete }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -29,6 +30,7 @@ export default function ChatInterface({ quizData, onOrderComplete }: ChatInterfa
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const hasAddedInitialMessage = useRef(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -37,6 +39,31 @@ export default function ChatInterface({ quizData, onOrderComplete }: ChatInterfa
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Добавяме initialMessage като първо съобщение от потребителя, ако е подадено
+  useEffect(() => {
+    if (initialMessage && !hasAddedInitialMessage.current) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: initialMessage,
+        sender: 'user',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, userMessage])
+      hasAddedInitialMessage.current = true
+      
+      // Симулираме AI отговор след малко
+      setTimeout(() => {
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          text: 'Благодаря за отговора! Това е placeholder отговор. AI логиката ще бъде добавена по-късно.',
+          sender: 'ai',
+          timestamp: new Date(),
+        }
+        setMessages(prev => [...prev, aiResponse])
+      }, 1500)
+    }
+  }, [initialMessage])
 
   const handleSend = async () => {
     if (!input.trim()) return

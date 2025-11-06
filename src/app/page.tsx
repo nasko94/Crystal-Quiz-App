@@ -19,6 +19,7 @@ export default function Home() {
     obstacles: '',
   })
   const [recommendationData, setRecommendationData] = useState<AIRecommendationData | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const updateQuizData = (data: Partial<QuizData>) => {
     setQuizData(prev => ({ ...prev, ...data }))
@@ -34,6 +35,11 @@ export default function Home() {
     nextStep()
   }
 
+  const handleRefreshStep = () => {
+    // Рефрешваме само компонента, данните остават непроменени
+    setRefreshKey(prev => prev + 1) // Инкрементираме key за форсиране на ре-рендериране
+  }
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -47,6 +53,7 @@ export default function Home() {
       case 7:
         return (
           <QuizQuestion
+            key={refreshKey}
             step={currentStep}
             quizData={quizData}
             onUpdate={updateQuizData}
@@ -64,9 +71,11 @@ export default function Home() {
         }
         return (
           <AIRecommendation
+            key={refreshKey}
             quizData={quizData}
             recommendationData={recommendationData}
             onContinue={nextStep}
+            onRefresh={handleRefreshStep}
           />
         )
       case 9:

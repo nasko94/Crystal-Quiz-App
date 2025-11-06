@@ -67,44 +67,47 @@ export default function BundleOffer({ products }: BundleOfferProps) {
       </div>
 
       {/* Продуктите */}
-      <div className="flex items-center justify-center gap-6 mb-6 flex-wrap">
-        {products.map((product, index) => {
-          const imageUrl = getFirstImage(product)
-          return (
-            <div key={product.id} className="flex items-center gap-6">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.5 + index * 0.1 }}
-              >
-                <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={product.title || product.name || 'Product'}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-secondary flex items-center justify-center">
-                      <span className="text-3xl">💎</span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-              {index < products.length - 1 && (
+      <div className="flex items-center justify-center mb-6">
+        <div className="flex items-center -space-x-6 md:space-x-0 md:gap-6">
+          {products.map((product, index) => {
+            const imageUrl = getFirstImage(product)
+            return (
+              <div key={product.id} className="flex items-center">
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.6 + index * 0.1 }}
-                  className="text-4xl md:text-5xl text-purple-400 font-bold flex items-center justify-center"
-                  style={{ minWidth: '2rem' }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.5 + index * 0.1 }}
+                  className="relative z-10"
+                  style={{ zIndex: products.length - index }}
                 >
-                  +
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={product.title || product.name || 'Product'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-secondary flex items-center justify-center">
+                        <span className="text-3xl">💎</span>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
-              )}
-            </div>
-          )
-        })}
+                {index < products.length - 1 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.6 + index * 0.1 }}
+                    className="hidden md:block text-5xl text-purple-400 font-bold mx-2"
+                  >
+                    +
+                  </motion.div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Цените */}
@@ -116,27 +119,43 @@ export default function BundleOffer({ products }: BundleOfferProps) {
           </div>
         </div>
         
-        <div className="text-purple-500 text-3xl font-bold">→</div>
+        <div className="text-purple-500 text-2xl font-bold">→</div>
         
         <div className="text-center">
           <p className="text-sm text-purple-600 mb-1 font-semibold">С отстъпка</p>
-          <div className="text-3xl font-bold text-gradient">
+          <div className="text-2xl font-bold text-gradient">
             {discountedPrice.toFixed(2)} лв
           </div>
         </div>
       </div>
 
       {/* Спестена сума */}
-      <div className="text-center">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 1.8, type: 'spring' }}
-          className="inline-block bg-green-100 text-green-700 px-6 py-2 rounded-full font-semibold"
+      <div className="text-center mb-4">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8 }}
+          className="text-sm text-gray-600"
         >
           💰 Спестяваш {savings.toFixed(2)} лв и безплатна доставка!
-        </motion.div>
+        </motion.p>
       </div>
+
+      {/* Бутон за вземане */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.0 }}
+        className="text-center"
+      >
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition-colors"
+        >
+          ВЗЕМИ СЕГА
+        </motion.button>
+      </motion.div>
     </motion.div>
   )
 }
