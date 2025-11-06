@@ -30,8 +30,8 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
     }))
   )
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
+    email: '',
     phone: '',
     econt: '',
   })
@@ -139,7 +139,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 pr-6 md:pr-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative z-[10000] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-purple-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-purple-300 [&::-webkit-scrollbar]:mr-2"
+          className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 pr-6 md:pr-8 pb-6 md:pb-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative z-[10000] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-purple-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-purple-300 [&::-webkit-scrollbar]:mr-2"
           style={{ scrollbarWidth: 'thin', scrollbarColor: '#e9d5ff transparent' }}
         >
           {/* Close button */}
@@ -295,28 +295,28 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Име *
+                  Име и Фамилия *
                 </label>
                 <input
                   type="text"
                   required
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="input-field"
-                  placeholder="Твоето име"
+                  placeholder="Твоето име и фамилия"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Фамилия *
+                  Имейл *
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   required
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="input-field"
-                  placeholder="Твоята фамилия"
+                  placeholder="твой@имейл.com"
                 />
               </div>
               <div>
@@ -336,22 +336,27 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Офис на Еконт *
                 </label>
-                <div className="flex gap-2 items-stretch">
+                <div className="flex gap-2 items-stretch min-w-0">
                   <input
                     type="text"
                     required
                     value={formData.econt}
                     onChange={(e) => setFormData({ ...formData, econt: e.target.value })}
-                    className={showOfficeSelector ? "flex-1 px-6 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none transition-all duration-300 text-lg" : "input-field"}
+                    className={showOfficeSelector ? "flex-1 min-w-0 px-6 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none transition-all duration-300 text-lg" : "input-field"}
                     placeholder="Офис Еконт Виница"
                   />
                   {showOfficeSelector && (
                     <button
                       type="button"
                       onClick={() => setIsOfficeSelectorOpen(true)}
-                      className="px-4 md:px-6 py-4 bg-gradient-primary text-white rounded-2xl hover:opacity-90 transition-all duration-300 font-semibold whitespace-nowrap shadow-md hover:shadow-lg flex-shrink-0"
+                      className="px-3 md:px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl transition-all duration-300 font-semibold text-sm md:text-base shadow-md hover:shadow-lg flex-shrink-0 leading-tight"
                     >
-                      Избери Офис
+                      <span className="block md:hidden">
+                        Избери<br />Офис
+                      </span>
+                      <span className="hidden md:block whitespace-nowrap">
+                        Избери Офис
+                      </span>
                     </button>
                   )}
                 </div>
