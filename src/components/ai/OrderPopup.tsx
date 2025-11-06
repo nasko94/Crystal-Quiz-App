@@ -105,7 +105,8 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative z-[10000]"
+          className="bg-white rounded-xl md:rounded-2xl p-4 md:p-8 pr-6 md:pr-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative z-[10000] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-purple-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-purple-300 [&::-webkit-scrollbar]:mr-2"
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#e9d5ff transparent' }}
         >
           {/* Close button */}
           <button
@@ -115,35 +116,35 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
             <X className="w-6 h-6" />
           </button>
 
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">
             Завърши поръчката
           </h2>
 
           {/* Products Section */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Продукти</h3>
-            <div className="space-y-4">
+          <div className="mb-6 md:mb-8">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-3 md:mb-4">Продукти</h3>
+            <div className="space-y-2 md:space-y-4">
               {selections.map((selection, index) => {
                 const imageUrl = getFirstImage(selection.product)
                 return (
                   <div
                     key={selection.product.id}
-                    className="flex items-center gap-4 p-4 border-2 border-purple-100 rounded-xl hover:border-purple-300 transition-colors"
+                    className="flex items-center gap-2 md:gap-4 p-2 md:p-4 border-2 border-purple-100 rounded-lg md:rounded-xl hover:border-purple-300 transition-colors"
                   >
                     {/* Checkbox */}
                     <button
                       onClick={() => toggleSelection(index)}
-                      className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                      className={`flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded border-2 flex items-center justify-center transition-all ${
                         selection.selected
                           ? 'bg-purple-600 border-purple-600'
                           : 'border-gray-300'
                       }`}
                     >
-                      {selection.selected && <Check className="w-4 h-4 text-white" />}
+                      {selection.selected && <Check className="w-3 h-3 md:w-4 md:h-4 text-white" />}
                     </button>
 
                     {/* Product Image */}
-                    <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0">
                       {imageUrl ? (
                         <img
                           src={imageUrl}
@@ -152,45 +153,48 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-secondary flex items-center justify-center">
-                          <span className="text-2xl">💎</span>
+                          <span className="text-lg md:text-2xl">💎</span>
                         </div>
                       )}
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm md:text-base text-gray-800 line-clamp-1">
                         {selection.product.title || selection.product.name || 'Продукт'}
                       </h4>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-xs md:text-sm text-gray-600 line-clamp-1 md:line-clamp-2 mt-0.5">
                         {selection.product.description}
                       </p>
                     </div>
 
-                    {/* Quantity */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQuantity(index, selection.quantity - 1)}
-                        className="w-8 h-8 rounded-full border-2 border-purple-300 text-purple-600 hover:bg-purple-50 flex items-center justify-center font-bold"
-                      >
-                        −
-                      </button>
-                      <span className="w-12 text-center font-semibold">{selection.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(index, selection.quantity + 1)}
-                        className="w-8 h-8 rounded-full border-2 border-purple-300 text-purple-600 hover:bg-purple-50 flex items-center justify-center font-bold"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {/* Price */}
-                    <div className="text-right">
-                      <div className="font-bold text-lg text-gray-800">
-                        {(selection.product.price * selection.quantity).toFixed(2)} лв
+                    {/* Quantity and Price - Stacked on mobile */}
+                    <div className="flex flex-col items-end gap-1 md:gap-2 flex-shrink-0">
+                      {/* Quantity */}
+                      <div className="flex items-center gap-0.5 md:gap-2">
+                        <button
+                          onClick={() => updateQuantity(index, selection.quantity - 1)}
+                          className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-purple-300 text-purple-600 hover:bg-purple-50 flex items-center justify-center font-bold text-sm md:text-base leading-none p-0"
+                        >
+                          <span className="flex items-center justify-center h-full w-full -translate-y-0.5">−</span>
+                        </button>
+                        <span className="w-6 md:w-12 text-center font-semibold text-sm md:text-base">{selection.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(index, selection.quantity + 1)}
+                          className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-purple-300 text-purple-600 hover:bg-purple-50 flex items-center justify-center font-bold text-sm md:text-base leading-none p-0"
+                        >
+                          <span className="flex items-center justify-center h-full w-full -translate-y-0.5">+</span>
+                        </button>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {selection.product.price.toFixed(2)} лв/бр
+
+                      {/* Price */}
+                      <div className="text-right">
+                        <div className="font-bold text-sm md:text-lg text-gray-800">
+                          {(selection.product.price * selection.quantity).toFixed(2)} лв
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-500 hidden md:block">
+                          {selection.product.price.toFixed(2)} лв/бр
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -203,15 +207,15 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-center"
+                className="mt-3 md:mt-4 p-3 md:p-4 bg-green-50 border-2 border-green-200 rounded-lg md:rounded-xl text-center"
               >
-                <p className="text-green-700 font-semibold">
+                <p className="text-green-700 font-semibold text-sm md:text-base">
                   🎉 Поздравления! Получаваш 10% намаление и безплатна доставка!
                 </p>
               </motion.div>
             ) : (
-              <div className="mt-4 p-3 bg-yellow-50 border-2 border-yellow-200 rounded-xl text-center">
-                <p className="text-yellow-700 text-sm">
+              <div className="mt-3 md:mt-4 p-2 md:p-3 bg-yellow-50 border-2 border-yellow-200 rounded-lg md:rounded-xl text-center">
+                <p className="text-yellow-700 text-xs md:text-sm">
                   💡 Добави още {3 - totalQuantity} бройки за да получиш 10% отстъпка и безплатна доставка!
                 </p>
               </div>
@@ -219,8 +223,8 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
           </div>
 
           {/* Prices Section */}
-          <div className="mb-8 p-6 bg-gray-50 rounded-xl">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Цени</h3>
+          <div className="mb-6 md:mb-8 p-4 md:p-6 bg-gray-50 rounded-lg md:rounded-xl">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-3 md:mb-4">Цени</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Междинна сума:</span>
@@ -252,8 +256,8 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
           </div>
 
           {/* Form Section */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Данни за доставка</h3>
+          <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-3 md:mb-4">Данни за доставка</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
