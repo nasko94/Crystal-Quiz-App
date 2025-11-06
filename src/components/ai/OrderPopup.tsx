@@ -19,6 +19,8 @@ interface ProductSelection {
 }
 
 export default function OrderPopup({ products, onClose, onOrder }: OrderPopupProps) {
+  const showOfficeSelector = true // Контролира дали бутонът "Избери Офис" да се показва
+  
   const [mounted, setMounted] = useState(false)
   const [selections, setSelections] = useState<ProductSelection[]>(
     products.map(product => ({
@@ -33,11 +35,43 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
     phone: '',
     econt: '',
   })
+  const [isOfficeSelectorOpen, setIsOfficeSelectorOpen] = useState(false)
+  const [receiverCity, setReceiverCity] = useState('')
+  const [receiverAddress, setReceiverAddress] = useState('')
 
   useEffect(() => {
     setMounted(true)
     return () => setMounted(false)
   }, [])
+
+  // Listen for messages from the office selector iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Verify the origin of the message
+      if (event.origin === 'https://agreeable-forest-09fdc1003.1.azurestaticapps.net') {
+        const officeData = event.data
+
+        // Extract the office name from the office data
+        if (officeData && officeData.office && officeData.office.address) {
+          const officeName = officeData.office.name
+          
+          // Update the econt field with the selected office name
+          setFormData(prev => ({ ...prev, econt: officeName }))
+          
+          // Close the office selector popup
+          setIsOfficeSelectorOpen(false)
+        }
+      }
+    }
+
+    if (isOfficeSelectorOpen) {
+      window.addEventListener('message', handleMessage)
+    }
+
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [isOfficeSelectorOpen])
 
   const toggleSelection = (index: number) => {
     setSelections(prev =>
@@ -302,14 +336,25 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Офис на Еконт *
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.econt}
-                  onChange={(e) => setFormData({ ...formData, econt: e.target.value })}
-                  className="input-field"
-                  placeholder="Офис Еконт Виница"
-                />
+                <div className="flex gap-2 items-stretch">
+                  <input
+                    type="text"
+                    required
+                    value={formData.econt}
+                    onChange={(e) => setFormData({ ...formData, econt: e.target.value })}
+                    className={showOfficeSelector ? "flex-1 px-6 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none transition-all duration-300 text-lg" : "input-field"}
+                    placeholder="Офис Еконт Виница"
+                  />
+                  {showOfficeSelector && (
+                    <button
+                      type="button"
+                      onClick={() => setIsOfficeSelectorOpen(true)}
+                      className="px-4 md:px-6 py-4 bg-gradient-primary text-white rounded-2xl hover:opacity-90 transition-all duration-300 font-semibold whitespace-nowrap shadow-md hover:shadow-lg flex-shrink-0"
+                    >
+                      Избери Офис
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -328,6 +373,48 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
     </AnimatePresence>
   )
 
-  return createPortal(popupContent, document.body)
+  // Office Selector Popup
+  const officeSelectorPopup = isOfficeSelectorOpen ? (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setIsOfficeSelectorOpen(false)}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10001] flex items-center justify-center p-4"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-[90%] h-[90%] bg-white rounded-xl overflow-hidden shadow-2xl"
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setIsOfficeSelectorOpen(false)}
+            className="absolute top-4 right-4 z-[10002] px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 hover:text-gray-800"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          
+          {/* Iframe */}
+          <iframe
+            src={`https://agreeable-forest-09fdc1003.1.azurestaticapps.net/?source=ee?officeType=&shopUrl=e-econt&city=${encodeURIComponent(receiverCity)}&address=${encodeURIComponent(receiverAddress)}&lang=bg`}
+            className="w-full h-full border-0"
+            style={{ border: 'none' }}
+            title="Office Selector"
+          />
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  ) : null
+
+  return (
+    <>
+      {createPortal(popupContent, document.body)}
+      {isOfficeSelectorOpen && createPortal(officeSelectorPopup, document.body)}
+    </>
+  )
 }
 
