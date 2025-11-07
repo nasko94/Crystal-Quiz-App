@@ -16,6 +16,28 @@ export interface ProductImage {
   height?: number
 }
 
+export interface ProductVariantOption {
+  name: string
+  value: string
+}
+
+export interface ProductVariant {
+  id: string
+  legacyId?: string
+  title: string
+  price: number
+  compareAtPrice?: number
+  available?: boolean
+  sku?: string | null
+  barcode?: string | null
+  inventoryQuantity?: number
+  selectedOptions?: ProductVariantOption[]
+  // Legacy support
+  option1?: string
+  option2?: string
+  option3?: string
+}
+
 export interface Product {
   id: string
   legacyId?: string
@@ -29,6 +51,8 @@ export interface Product {
   variantId?: string
   available?: boolean
   description: string
+  variants?: ProductVariant[]
+  options?: string[] // e.g., ["Size", "Color"]
 }
 
 export interface AIRecommendationData {

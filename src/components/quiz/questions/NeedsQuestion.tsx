@@ -54,7 +54,7 @@ export default function NeedsQuestion({
           От какво би казал, че имаш нужда сега?
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 max-w-3xl mx-auto">
           {options.map((option) => {
             const Icon = option.icon
             return (
@@ -63,10 +63,10 @@ export default function NeedsQuestion({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSelect(option.value)}
-                className="p-6 rounded-2xl border-2 bg-white border-purple-200 hover:border-purple-400 transition-all duration-300"
+                className="p-4 md:p-6 rounded-xl md:rounded-2xl border-2 bg-white border-purple-200 hover:border-purple-400 transition-all duration-300"
               >
-                <Icon className="w-8 h-8 mx-auto mb-3 text-purple-500" />
-                <span className="text-lg font-semibold">{option.label}</span>
+                <Icon className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 md:mb-3 text-purple-500" />
+                <span className="text-sm md:text-lg font-semibold leading-tight">{option.label}</span>
               </motion.button>
             )
           })}

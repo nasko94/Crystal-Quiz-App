@@ -71,26 +71,26 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
         <span className="font-medium">Избери твоята рожденна дата</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 md:gap-4">
         {/* Day */}
         <motion.div
           whileHover={{ scale: 1.02 }}
           className="relative"
         >
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
             Ден
           </label>
           <select
             value={day}
             onChange={(e) => setDay(Number(e.target.value))}
-            className="w-full px-4 py-4 text-lg font-semibold rounded-2xl border-2 border-purple-200 
+            className="w-full px-2 md:px-4 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl md:rounded-2xl border-2 border-purple-200 
                      focus:border-purple-400 focus:outline-none transition-all duration-300
-                     bg-white cursor-pointer hover:border-purple-300 appearance-none"
+                     bg-white cursor-pointer hover:border-purple-300 appearance-none pr-8 md:pr-12"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              backgroundSize: '1.5rem',
+              backgroundPosition: 'right 0.5rem center',
+              backgroundSize: '1rem',
             }}
           >
             {days.map((d) => (
@@ -106,20 +106,20 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
           whileHover={{ scale: 1.02 }}
           className="relative"
         >
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
             Месец
           </label>
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="w-full px-4 py-4 text-lg font-semibold rounded-2xl border-2 border-purple-200 
+            className="w-full px-2 md:px-4 py-3 md:py-4 text-sm md:text-lg font-semibold rounded-xl md:rounded-2xl border-2 border-purple-200 
                      focus:border-purple-400 focus:outline-none transition-all duration-300
-                     bg-white cursor-pointer hover:border-purple-300 appearance-none"
+                     bg-white cursor-pointer hover:border-purple-300 appearance-none pr-8 md:pr-12"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              backgroundSize: '1.5rem',
+              backgroundPosition: 'right 0.5rem center',
+              backgroundSize: '1rem',
             }}
           >
             {months.map((m) => (
@@ -135,20 +135,20 @@ export default function CustomDatePicker({ value, onChange }: CustomDatePickerPr
           whileHover={{ scale: 1.02 }}
           className="relative"
         >
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
             Година
           </label>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="w-full px-4 py-4 text-lg font-semibold rounded-2xl border-2 border-purple-200 
+            className="w-full px-2 md:px-4 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl md:rounded-2xl border-2 border-purple-200 
                      focus:border-purple-400 focus:outline-none transition-all duration-300
-                     bg-white cursor-pointer hover:border-purple-300 appearance-none"
+                     bg-white cursor-pointer hover:border-purple-300 appearance-none pr-8 md:pr-12"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              backgroundSize: '1.5rem',
+              backgroundPosition: 'right 0.5rem center',
+              backgroundSize: '1rem',
             }}
           >
             {years.map((y) => (

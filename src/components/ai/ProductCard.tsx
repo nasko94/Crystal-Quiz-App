@@ -1,16 +1,24 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Product } from '@/types/quiz'
+import { Product, ProductVariant } from '@/types/quiz'
 
 interface ProductCardProps {
   product: Product
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    product.variants && product.variants.length > 0 ? product.variants[0] : null
+  )
+
   const productUrl = product.handle 
     ? `https://crystalenergy.shop/products/${product.handle}`
     : null
+
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price
+  const hasVariants = product.variants && product.variants.length > 1
 
   return (
     <motion.div
@@ -56,6 +64,47 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="text-xl font-bold text-gray-800 mb-2">
           {product.title || product.name || 'Продукт'}
         </h3>
+
+        {/* Variant Selector */}
+        {hasVariants && (
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              {product.options && product.options[0] ? product.options[0] : 
+               (product.variants && product.variants[0]?.selectedOptions && product.variants[0].selectedOptions.length > 0
+                 ? product.variants[0].selectedOptions[0].name 
+                 : 'Вариант')}
+            </label>
+            <select
+              value={selectedVariant?.id || ''}
+              onChange={(e) => {
+                const variant = product.variants?.find(v => v.id === e.target.value)
+                setSelectedVariant(variant || null)
+              }}
+              className="w-full px-3 py-2 text-sm rounded-xl border-2 border-purple-200 
+                       focus:border-purple-400 focus:outline-none transition-all duration-300
+                       bg-white cursor-pointer hover:border-purple-300 appearance-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 0.75rem center',
+                backgroundSize: '1rem',
+                paddingRight: '2.5rem',
+              }}
+            >
+              {product.variants?.map((variant) => {
+                // Използваме selectedOptions ако е налично, иначе title
+                const displayText = variant.selectedOptions && variant.selectedOptions.length > 0
+                  ? variant.selectedOptions.map(opt => opt.value).join(' / ')
+                  : variant.title
+                return (
+                  <option key={variant.id} value={variant.id} disabled={variant.available === false}>
+                    {displayText} {variant.available === false ? '(Недостъпен)' : ''}
+                  </option>
+                )
+              })}
+            </select>
+          </div>
+        )}
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
           {product.description}
@@ -63,7 +112,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between gap-4">
           <span className="text-2xl font-bold text-gradient flex-shrink-0">
-            {product.price.toFixed(2)} лв
+            {displayPrice.toFixed(2)} лв
           </span>
           
           {productUrl ? (

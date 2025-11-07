@@ -31,9 +31,19 @@ export default function ExitIntentPopup({ onQuestionClick, userName }: ExitInten
       }
     }, 5 * 60 * 1000) // 5 минути в милисекунди
 
-    // Exit intent detection - когато мишката излиза от страницата
+    // Exit intent detection - когато мишката излиза от страницата (desktop)
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShown) {
+        setShowPopup(true)
+        setHasShown(true)
+      }
+    }
+
+    // За мобилни - когато потребителят се опитва да излезе (back button)
+    const handlePopState = (e: PopStateEvent) => {
+      if (!hasShown && !showPopup) {
+        // Предотвратяваме излизане и показваме попапа
+        window.history.pushState(null, '', window.location.href)
         setShowPopup(true)
         setHasShown(true)
       }
@@ -48,13 +58,65 @@ export default function ExitIntentPopup({ onQuestionClick, userName }: ExitInten
       }
     }
 
+    // За мобилни - откриване на swipe gestures
+    let touchStartY = 0
+    let touchStartX = 0
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY
+      touchStartX = e.touches[0].clientX
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!hasShown && !showPopup) {
+        const touchEndY = e.touches[0].clientY
+        const touchEndX = e.touches[0].clientX
+        const deltaY = touchStartY - touchEndY
+        const deltaX = touchStartX - touchEndX
+        const windowHeight = window.innerHeight
+        const windowWidth = window.innerWidth
+
+        // Swipe надолу от горната част на екрана (exit intent gesture)
+        if (touchStartY < 50 && deltaY < -50 && Math.abs(deltaX) < Math.abs(deltaY)) {
+          setShowPopup(true)
+          setHasShown(true)
+        }
+
+        // Swipe нагоре от долната част на екрана (exit intent gesture)
+        if (touchStartY > windowHeight - 50 && deltaY > 50 && Math.abs(deltaX) < Math.abs(deltaY)) {
+          setShowPopup(true)
+          setHasShown(true)
+        }
+
+        // Swipe наляво от дясната част на екрана (exit intent gesture - назад)
+        if (touchStartX > windowWidth - 50 && deltaX > 50 && Math.abs(deltaY) < Math.abs(deltaX)) {
+          setShowPopup(true)
+          setHasShown(true)
+        }
+
+        // Swipe надясно от лявата част на екрана (exit intent gesture - назад)
+        if (touchStartX < 50 && deltaX < -50 && Math.abs(deltaY) < Math.abs(deltaX)) {
+          setShowPopup(true)
+          setHasShown(true)
+        }
+      }
+    }
+
     document.addEventListener('mouseleave', handleMouseLeave)
+    window.addEventListener('popstate', handlePopState)
     window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('touchstart', handleTouchStart)
+    document.addEventListener('touchmove', handleTouchMove)
+
+    // Добавяме събитие в историята за да можем да го intercept-нем
+    window.history.pushState(null, '', window.location.href)
 
     return () => {
       clearTimeout(timer)
       document.removeEventListener('mouseleave', handleMouseLeave)
+      window.removeEventListener('popstate', handlePopState)
       window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
     }
   }, [hasShown, showPopup])
 
@@ -109,7 +171,7 @@ export default function ExitIntentPopup({ onQuestionClick, userName }: ExitInten
               >
                 <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
                   <Image
-                    src="/pop-up-avatar.jpg"
+                    src="/avatar.jpg"
                     alt="AI Avatar"
                     width={85}
                     height={85}

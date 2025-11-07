@@ -279,31 +279,35 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
   }
 
   return (
-    <div className="card max-w-4xl mx-auto">
-      <div className="bg-gradient-primary text-white px-6 py-4 rounded-t-2xl -mt-8 -mx-8 mb-6">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
-          <Gem className="w-8 h-8" />
-          Вашият Кристален Асистент
+    <div className="bg-white rounded-3xl shadow-xl backdrop-blur-sm p-4 md:p-8 w-full max-w-full md:max-w-4xl mx-auto">
+      <div className="bg-gradient-primary text-white px-4 md:px-6 py-4 rounded-t-2xl -mt-8 -mx-4 md:-mx-8 mb-6">
+        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 md:gap-3">
+          <Gem className="w-6 h-6 md:w-8 md:h-8" />
+          <span className="leading-tight">Вашият Кристален Асистент</span>
         </h2>
       </div>
 
-      <div className="h-[500px] overflow-y-auto mb-6 space-y-4 px-2">
+      <div className="h-[500px] overflow-y-auto mb-6 space-y-4 px-1 md:px-2">
         <AnimatePresence>
-          {messages.map((message) => (
+          {messages.map((message, index) => {
+            // Показваме аватари само за първите две съобщения
+            const showAvatar = index < 2
+            return (
             <motion.div
               key={message.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`flex items-center gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center ${showAvatar ? 'gap-3' : ''} ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}
             >
+              {showAvatar && (
               <div className={`
                 flex-shrink-0 rounded-full overflow-hidden flex items-center justify-center
                 ${message.sender === 'ai' ? 'w-12 h-12 border-2 border-white shadow-md' : 'w-10 h-10 bg-purple-200'}
               `}>
                 {message.sender === 'ai' ? (
                   <Image
-                    src="/pop-up-avatar.jpg"
+                    src="/avatar.jpg"
                     alt="AI Avatar"
                     width={48}
                     height={48}
@@ -313,9 +317,10 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
                   <User className="w-6 h-6 text-purple-600" />
                 )}
               </div>
+              )}
 
               <div className={`
-                max-w-[70%] px-4 py-3 rounded-2xl
+                w-full px-3 md:px-4 py-2 md:py-3 rounded-2xl
                 ${message.sender === 'ai' 
                   ? 'bg-gradient-secondary text-gray-800' 
                   : 'bg-purple-600 text-white'
@@ -331,7 +336,7 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
                 )}
               </div>
             </motion.div>
-          ))}
+          )})}
         </AnimatePresence>
 
         {isTyping && (
@@ -342,7 +347,7 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
           >
             <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md">
             <Image
-                    src="/pop-up-avatar.jpg"
+                    src="/avatar.jpg"
                     alt="AI Avatar"
                     width={48}
                     height={48}
@@ -371,14 +376,14 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2 md:gap-3">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Напиши съобщение..."
-          className="input-field flex-1 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-purple-100 hover:border-purple-300"
+          className="input-field flex-1 py-3 px-4 md:px-6 text-base md:text-lg transition-all duration-200 hover:shadow-lg hover:shadow-purple-100 hover:border-purple-300"
         />
         
         <motion.button

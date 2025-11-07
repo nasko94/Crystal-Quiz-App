@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { X, Check } from 'lucide-react'
-import { Product } from '@/types/quiz'
+import { Product, ProductVariant } from '@/types/quiz'
 
 interface OrderPopupProps {
   products: Product[]
@@ -16,6 +16,7 @@ interface ProductSelection {
   product: Product
   selected: boolean
   quantity: number
+  selectedVariantId?: string
 }
 
 export default function OrderPopup({ products, onClose, onOrder }: OrderPopupProps) {
@@ -27,6 +28,9 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       product,
       selected: true,
       quantity: 1,
+      selectedVariantId: product.variants && product.variants.length > 0 
+        ? product.variants[0].id 
+        : product.variantId,
     }))
   )
   const [formData, setFormData] = useState({
@@ -86,6 +90,20 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
     )
   }
 
+  const updateVariant = (index: number, variantId: string) => {
+    setSelections(prev =>
+      prev.map((sel, i) => (i === index ? { ...sel, selectedVariantId: variantId } : sel))
+    )
+  }
+
+  const getProductPrice = (selection: ProductSelection): number => {
+    if (selection.selectedVariantId && selection.product.variants) {
+      const variant = selection.product.variants.find(v => v.id === selection.selectedVariantId)
+      if (variant) return variant.price
+    }
+    return selection.product.price
+  }
+
   const selectedProducts = selections.filter(sel => sel.selected)
   
   // Изчисляваме общия брой бройки от избраните продукти
@@ -94,7 +112,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
 
   // Изчисляваме цените
   const subtotal = selectedProducts.reduce(
-    (sum, sel) => sum + sel.product.price * sel.quantity,
+    (sum, sel) => sum + getProductPrice(sel) * sel.quantity,
     0
   )
   const discount = qualifiesForDiscount ? subtotal * 0.1 : 0 // 10% отстъпка ако има минимум 3 бройки
@@ -108,6 +126,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       products: selectedProducts.map(sel => ({
         ...sel.product,
         quantity: sel.quantity,
+        variantId: sel.selectedVariantId || sel.product.variantId,
       })),
       subtotal,
       shipping,
@@ -197,6 +216,35 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                       <h4 className="font-semibold text-sm md:text-base text-gray-800 line-clamp-1">
                         {selection.product.title || selection.product.name || 'Продукт'}
                       </h4>
+                      {/* Variant Selector */}
+                      {selection.product.variants && selection.product.variants.length > 1 && (
+                        <select
+                          value={selection.selectedVariantId || ''}
+                          onChange={(e) => updateVariant(index, e.target.value)}
+                          className="w-full mt-1 mb-1 px-2 py-1 text-xs md:text-sm rounded-lg border border-purple-200 
+                                   focus:border-purple-400 focus:outline-none transition-all duration-300
+                                   bg-white cursor-pointer hover:border-purple-300 appearance-none"
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 0.5rem center',
+                            backgroundSize: '0.75rem',
+                            paddingRight: '1.75rem',
+                          }}
+                        >
+                          {selection.product.variants.map((variant) => {
+                            // Използваме selectedOptions ако е налично, иначе title
+                            const displayText = variant.selectedOptions && variant.selectedOptions.length > 0
+                              ? variant.selectedOptions.map(opt => opt.value).join(' / ')
+                              : variant.title
+                            return (
+                              <option key={variant.id} value={variant.id} disabled={variant.available === false}>
+                                {displayText} {variant.available === false ? '(Недостъпен)' : ''}
+                              </option>
+                            )
+                          })}
+                        </select>
+                      )}
                       <p className="text-xs md:text-sm text-gray-600 line-clamp-1 md:line-clamp-2 mt-0.5">
                         {selection.product.description}
                       </p>
@@ -224,10 +272,10 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                       {/* Price */}
                       <div className="text-right">
                         <div className="font-bold text-sm md:text-lg text-gray-800">
-                          {(selection.product.price * selection.quantity).toFixed(2)} лв
+                          {(getProductPrice(selection) * selection.quantity).toFixed(2)} лв
                         </div>
                         <div className="text-xs md:text-sm text-gray-500 hidden md:block">
-                          {selection.product.price.toFixed(2)} лв/бр
+                          {getProductPrice(selection).toFixed(2)} лв/бр
                         </div>
                       </div>
                     </div>
