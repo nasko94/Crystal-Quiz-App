@@ -46,6 +46,68 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
 
   useEffect(() => {
     setMounted(true)
+    
+    // Изпращаме event към Klaviyo за Quiz Checkout Started (само веднъж)
+    const sendCheckoutStartedEvent = async () => {
+      // Проверяваме дали вече е изпратен event-ът
+      const checkoutStartedSent = sessionStorage.getItem('quizCheckoutStarted')
+      if (checkoutStartedSent === 'true') {
+        console.log('⏭️ Quiz Checkout Started event already sent, skipping')
+        return
+      }
+
+      try {
+        const selectedProducts = selections.filter(sel => sel.selected)
+        
+        const properties: any = {
+          quiz_type: 'crystal_quiz',
+        }
+        
+        // Добавяме данни за всеки избран продукт
+        selectedProducts.forEach((selection, index) => {
+          const productName = selection.product.title || selection.product.name || 'Продукт'
+          const productUrl = selection.product.handle 
+            ? `https://crystalenergy.shop/products/${selection.product.handle}`
+            : ''
+          
+          properties[`product${index + 1}_name`] = productName
+          properties[`product${index + 1}_url`] = productUrl
+          properties[`product${index + 1}_quantity`] = selection.quantity
+          properties[`product${index + 1}_price`] = selection.product.price
+        })
+        
+        properties.total_products = selectedProducts.length
+        properties.total_quantity = selectedProducts.reduce((sum, sel) => sum + sel.quantity, 0)
+
+        const eventData = {
+          metricName: 'Quiz Checkout Started',
+          email: quizData.email,
+          properties,
+        }
+
+        const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(eventData),
+        })
+
+        if (eventResponse.ok) {
+          console.log('✅ Quiz Checkout Started event sent successfully')
+          // Запазваме в session storage, че event-ът е изпратен
+          sessionStorage.setItem('quizCheckoutStarted', 'true')
+        } else {
+          console.warn('⚠️ Failed to send Quiz Checkout Started event:', await eventResponse.text())
+        }
+      } catch (err) {
+        console.error('Error sending Quiz Checkout Started event:', err)
+      }
+    }
+    
+    // Изпращаме event-а когато се монтира компонентът (само ако не е изпратен вече)
+    sendCheckoutStartedEvent()
+    
     return () => setMounted(false)
   }, [])
 
@@ -254,6 +316,61 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
           discount: discount,
           total: total,
         }
+        
+        // Изпращаме event за успешна покупка към Klaviyo
+        const sendPurchaseEvent = async () => {
+          try {
+            const properties: any = {
+              quiz_type: 'crystal_quiz',
+              order_number: orderSummaryData.orderNumber,
+              subtotal: subtotal,
+              shipping: shipping,
+              discount: discount,
+              total: total,
+            }
+            
+            // Добавяме данни за всеки закупен продукт
+            selectedProducts.forEach((selection, index) => {
+              const productName = selection.product.title || selection.product.name || 'Продукт'
+              const productUrl = selection.product.handle 
+                ? `https://crystalenergy.shop/products/${selection.product.handle}`
+                : ''
+              
+              properties[`product${index + 1}_name`] = productName
+              properties[`product${index + 1}_url`] = productUrl
+              properties[`product${index + 1}_quantity`] = selection.quantity
+              properties[`product${index + 1}_price`] = getProductPrice(selection) * selection.quantity
+            })
+            
+            properties.total_products = selectedProducts.length
+            properties.total_quantity = selectedProducts.reduce((sum, sel) => sum + sel.quantity, 0)
+
+            const eventData = {
+              metricName: 'Purchase',
+              email: quizData.email,
+              properties,
+            }
+
+            const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(eventData),
+            })
+
+            if (eventResponse.ok) {
+              console.log('✅ Purchase event sent successfully')
+            } else {
+              console.warn('⚠️ Failed to send Purchase event:', await eventResponse.text())
+            }
+          } catch (err) {
+            console.error('Error sending Purchase event:', err)
+          }
+        }
+        
+        // Изпращаме event-а (не чакаме резултата)
+        sendPurchaseEvent()
         
         // Close popup and pass data to parent
         setIsLoading(false)

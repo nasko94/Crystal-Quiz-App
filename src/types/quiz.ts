@@ -5,6 +5,10 @@ export interface QuizData {
   happinessLevel: number
   lastAchievement: string
   needs: string
+  morningFeeling: string
+  missingFeelings: string
+  release: string
+  beachAction: string
   email: string
   obstacles: string
 }

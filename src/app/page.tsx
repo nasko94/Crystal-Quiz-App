@@ -16,6 +16,10 @@ export default function Home() {
     happinessLevel: 5,
     lastAchievement: '',
     needs: '',
+    morningFeeling: '',
+    missingFeelings: '',
+    release: '',
+    beachAction: '',
     email: '',
     obstacles: '',
   })
@@ -53,6 +57,10 @@ export default function Home() {
       case 6:
       case 7:
       case 8:
+      case 9:
+      case 10:
+      case 11:
+      case 12:
         return (
           <QuizQuestion
             key={refreshKey}
@@ -63,7 +71,7 @@ export default function Home() {
             onRecommendationComplete={handleRecommendationComplete}
           />
         )
-      case 9:
+      case 13:
         if (!recommendationData) {
           return (
             <div className="card text-center">
@@ -80,7 +88,7 @@ export default function Home() {
             onRefresh={handleRefreshStep}
           />
         )
-      case 10:
+      case 14:
         return <ChatPurchase quizData={quizData} />
       default:
         return <QuizIntro onStart={nextStep} />

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import { QuizData, AIRecommendationData } from '@/types/quiz'
-import { getNeedsLabel, getAchievementLabel, getHappinessLabel } from '@/utils/zodiac'
+import { getNeedsLabel, getAchievementLabel, getHappinessLabel, getMorningFeelingLabel, getMissingFeelingsLabel, getReleaseLabel, getBeachActionLabel } from '@/utils/zodiac'
 
 interface LoadingScreenProps {
   name: string
@@ -24,8 +24,120 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
       return
     }
 
+    const sendRecommendedProductsEvent = async (recommendationData: AIRecommendationData) => {
+      try {
+        // Вземаме първите 3 продукта
+        const products = recommendationData.fullProductData.slice(0, 3)
+        
+        // Форматираме продуктите
+        const properties: any = {
+          quiz_type: 'crystal_quiz',
+          suggestion: recommendationData.suggestion,
+        }
+        
+        const profileProperties: any = {}
+        
+        products.forEach((product, index) => {
+          const productName = product.title || product.name || 'Продукт'
+          const productHandle = product.handle || ''
+          const productId = product.id || product.legacyId || ''
+          const productUrl = productHandle 
+            ? `https://crystalenergy.shop/products/${productHandle}`
+            : ''
+          
+          const productIndex = index + 1
+          
+          // В properties: структурирани данни за всеки продукт
+          properties[`product${productIndex}_name`] = productName
+          properties[`product${productIndex}_handle`] = productHandle
+          properties[`product${productIndex}_id`] = productId
+          properties[`product${productIndex}_url`] = productUrl
+          
+          // В profileProperties: само URL
+          if (productUrl) {
+            profileProperties[`suggestedItem${productIndex}`] = productUrl
+          }
+        })
+        
+        properties.total_products = products.length
+
+        const eventData = {
+          metricName: 'RecommendedProducts',
+          email: quizData.email,
+          properties,
+          profileProperties,
+        }
+
+        const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(eventData),
+        })
+
+        if (eventResponse.ok) {
+          console.log('✅ Klaviyo event sent successfully')
+        } else {
+          console.warn('⚠️ Failed to send Klaviyo event:', await eventResponse.text())
+        }
+      } catch (err) {
+        // Не показваме грешка на потребителя, само логваме
+        console.error('Error sending Klaviyo event:', err)
+      }
+    }
+
+    const saveToKlaviyo = async () => {
+      try {
+        // Split name into first_name only
+        const nameParts = quizData.name.trim().split(' ')
+        const firstName = nameParts[0] || ''
+
+        // Prepare Klaviyo profile data
+        const klaviyoData = {
+          email: quizData.email,
+          listId: 'TTuXNS',
+          first_name: firstName,
+          customSource: 'AI QUIZ FUNNEL',
+          properties: {
+            'Zodiac Sign': quizData.zodiacSign,
+            'Happiness Level': quizData.happinessLevel,
+            'Last Achievement': getAchievementLabel(quizData.lastAchievement),
+            'Needs': getNeedsLabel(quizData.needs),
+            'Morning Feeling': getMorningFeelingLabel(quizData.morningFeeling || ''),
+            'Missing Feelings': getMissingFeelingsLabel(quizData.missingFeelings || ''),
+            'Release': getReleaseLabel(quizData.release || ''),
+            'Beach Action': getBeachActionLabel(quizData.beachAction || ''),
+            'Obstacles': quizData.obstacles.trim() || '',
+            'Date of Birth': quizData.dateOfBirth,
+          },
+        }
+
+        const klaviyoResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(klaviyoData),
+        })
+
+        if (klaviyoResponse.ok) {
+          const result = await klaviyoResponse.json()
+          console.log('✅ Klaviyo profile saved successfully', result)
+        } else {
+          console.warn('⚠️ Failed to save Klaviyo profile:', await klaviyoResponse.text())
+        }
+      } catch (err) {
+        // Не показваме грешка на потребителя, само логваме
+        console.error('Error saving to Klaviyo:', err)
+      }
+    }
+
     const fetchRecommendation = async () => {
       try {
+        // Изпращаме заявката към Klaviyo паралелно (не чакаме резултата)
+        saveToKlaviyo()
+
         // Подготвяме данните за API заявката
         const answers = {
           name: quizData.name,
@@ -35,6 +147,10 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
           happinessLabel: getHappinessLabel(quizData.happinessLevel),
           lastAchievement: getAchievementLabel(quizData.lastAchievement),
           needs: getNeedsLabel(quizData.needs),
+          morningFeeling: quizData.morningFeeling || '',
+          missingFeelings: quizData.missingFeelings || '',
+          release: quizData.release || '',
+          beachAction: quizData.beachAction || '',
           obstacles: quizData.obstacles.trim() || '',
         }
 
@@ -56,6 +172,9 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
         console.log('📥 Server Response:', JSON.stringify(data, null, 2))
 
         if (data.success && data.fullProductData && Array.isArray(data.fullProductData)) {
+          // Изпращаме event към Klaviyo с препоръчаните продукти
+          await sendRecommendedProductsEvent(data)
+
           // Проверяваме дали вече е извикано
           if (hasCalledOnCompleteRef.current) {
             console.warn('⚠️ onComplete already called, skipping')

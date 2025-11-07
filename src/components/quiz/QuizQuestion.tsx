@@ -8,6 +8,10 @@ import BirthdateQuestion from './questions/BirthdateQuestion'
 import HappinessQuestion from './questions/HappinessQuestion'
 import AchievementQuestion from './questions/AchievementQuestion'
 import NeedsQuestion from './questions/NeedsQuestion'
+import MorningFeelingQuestion from './questions/MorningFeelingQuestion'
+import MissingFeelingsQuestion from './questions/MissingFeelingsQuestion'
+import ReleaseQuestion from './questions/ReleaseQuestion'
+import BeachQuestion from './questions/BeachQuestion'
 import EmailQuestion from './questions/EmailQuestion'
 import ObstaclesQuestion from './questions/ObstaclesQuestion'
 import LoadingScreen from './LoadingScreen'
@@ -78,13 +82,45 @@ export default function QuizQuestion({
         )
       case 6:
         return (
+          <MorningFeelingQuestion
+            morningFeeling={quizData.morningFeeling}
+            onUpdate={(morningFeeling) => onUpdate({ morningFeeling })}
+            onNext={onNext}
+          />
+        )
+      case 7:
+        return (
+          <MissingFeelingsQuestion
+            missingFeelings={quizData.missingFeelings}
+            onUpdate={(missingFeelings) => onUpdate({ missingFeelings })}
+            onNext={onNext}
+          />
+        )
+      case 8:
+        return (
+          <ReleaseQuestion
+            release={quizData.release}
+            onUpdate={(release) => onUpdate({ release })}
+            onNext={onNext}
+          />
+        )
+      case 9:
+        return (
+          <BeachQuestion
+            beachAction={quizData.beachAction}
+            onUpdate={(beachAction) => onUpdate({ beachAction })}
+            onNext={onNext}
+          />
+        )
+      case 10:
+        return (
           <EmailQuestion
             email={quizData.email}
             onUpdate={(email) => onUpdate({ email })}
             onNext={onNext}
           />
         )
-      case 7:
+      case 11:
         return (
           <ObstaclesQuestion
             obstacles={quizData.obstacles}
@@ -93,7 +129,7 @@ export default function QuizQuestion({
             onNext={onNext}
           />
         )
-      case 8:
+      case 12:
         return (
           <LoadingScreen 
             name={quizData.name} 
@@ -108,7 +144,7 @@ export default function QuizQuestion({
 
   return (
     <>
-      {step < 8 && step > 0 && <ProgressBar current={step} total={7} />}
+      {step < 12 && step > 0 && <ProgressBar current={step} total={11} />}
       <motion.div
         key={step}
         initial={{ opacity: 0, x: 50 }}

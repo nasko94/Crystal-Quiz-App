@@ -64,3 +64,43 @@ export const getHappinessLabel = (level: number): string => {
   return labels[level] || `Ниво ${level}`
 }
 
+export const getMorningFeelingLabel = (feeling: string): string => {
+  const labels: Record<string, string> = {
+    inspired: 'Вдъхновен, щастлив',
+    tired: 'Уморен, объркан',
+    normal: 'Нормално',
+    anxious: 'Тревожен',
+  }
+  return labels[feeling] || feeling
+}
+
+export const getMissingFeelingsLabel = (feeling: string): string => {
+  const labels: Record<string, string> = {
+    courage: 'Смелост да бъда себе си',
+    understanding: 'Разбирателство с хората около мен',
+    trust: 'Доверие в живота',
+    stability: 'Емоционална устойчивост',
+  }
+  return labels[feeling] || feeling
+}
+
+export const getReleaseLabel = (release: string): string => {
+  const labels: Record<string, string> = {
+    stress: 'Стрес',
+    fears: 'Страхове и тревожност',
+    negative_thoughts: 'Негативни мисли',
+    toxic_influences: 'Токсични влияния и хора',
+  }
+  return labels[release] || release
+}
+
+export const getBeachActionLabel = (action: string): string => {
+  const labels: Record<string, string> = {
+    photo: 'Правя една снимка',
+    dive: 'Хвърлям се направо във водата!',
+    feel: 'Усещам пясъка и водата с пръстите на краката си',
+    breathe: 'Сядам и поемам дълбок дъх',
+  }
+  return labels[action] || action
+}
+
