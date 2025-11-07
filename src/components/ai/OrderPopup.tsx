@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
-import { X, Check } from 'lucide-react'
+import { X, Check, Loader2 } from 'lucide-react'
 import { Product, ProductVariant } from '@/types/quiz'
 
 interface OrderPopupProps {
@@ -20,8 +20,6 @@ interface ProductSelection {
 }
 
 export default function OrderPopup({ products, onClose, onOrder }: OrderPopupProps) {
-  const showOfficeSelector = true // Контролира дали бутонът "Избери Офис" да се показва
-  
   const [mounted, setMounted] = useState(false)
   const [selections, setSelections] = useState<ProductSelection[]>(
     products.map(product => ({
@@ -43,6 +41,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
   const [receiverCity, setReceiverCity] = useState('')
   const [receiverAddress, setReceiverAddress] = useState('')
   const [selectedOfficeData, setSelectedOfficeData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -139,6 +138,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     
     // Split fullName into firstName and lastName
     const nameParts = formData.fullName.trim().split(' ')
@@ -207,16 +207,58 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       console.log('Order creation result:', result)
       
       if (result.success) {
-        // Success - pass the result to parent component
+        // Success - prepare data for OrderSummary component
         console.log('✅ Order created successfully!')
-        onOrder({ ...orderPayload, result })
+        
+        // Adapt the data to OrderSummary format
+        const orderSummaryData = {
+          orderNumber: result.order?.name || result.order?.id || 'N/A',
+          firstName: firstName,
+          lastName: lastName,
+          phone: formData.phone,
+          email: formData.email,
+          econt: selectedOfficeData?.name || formData.econt,
+          products: selectedProducts.map(sel => {
+            // Get variant info if available
+            let variantText = null
+            if (sel.selectedVariantId && sel.product.variants) {
+              const variant = sel.product.variants.find(v => v.id === sel.selectedVariantId)
+              if (variant) {
+                if (variant.selectedOptions && variant.selectedOptions.length > 0) {
+                  variantText = variant.selectedOptions.map(opt => opt.value).join(' / ')
+                } else if (variant.title && variant.title !== 'Default Title') {
+                  variantText = variant.title
+                }
+              }
+            }
+            
+            return {
+              name: sel.product.title || sel.product.name || 'Продукт',
+              variant: variantText,
+              price: getProductPrice(sel) * sel.quantity,
+              quantity: sel.quantity,
+              image: getFirstImage(sel.product),
+            }
+          }),
+          subtotal: subtotal,
+          shipping: shipping,
+          discount: discount,
+          total: total,
+        }
+        
+        // Close popup and pass data to parent
+        setIsLoading(false)
+        onClose()
+        onOrder(orderSummaryData)
       } else {
         // Error - show error message
         console.error('❌ Order creation failed:', result)
+        setIsLoading(false)
         alert(`Грешка при създаване на поръчка: ${result.error || 'Неизвестна грешка'}`)
       }
     } catch (error) {
       console.error('❌ Error creating order:', error)
+      setIsLoading(false)
       alert('Грешка при създаване на поръчка. Моля, опитайте отново.')
     }
   }
@@ -467,7 +509,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Офис на Еконт *
+                  Офис на Еконт или Личен Адрес*
                 </label>
                 <div className="flex gap-2 items-stretch min-w-0">
                   <input
@@ -475,23 +517,21 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                     required
                     value={formData.econt}
                     onChange={(e) => setFormData({ ...formData, econt: e.target.value })}
-                    className={showOfficeSelector ? "flex-1 min-w-0 px-6 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none transition-all duration-300 text-lg" : "input-field"}
-                    placeholder="Офис Еконт Виница"
+                    className="flex-1 min-w-0 px-6 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none transition-all duration-300 text-lg"
+                    placeholder="Личен Адрес"
                   />
-                  {showOfficeSelector && (
-                    <button
-                      type="button"
-                      onClick={() => setIsOfficeSelectorOpen(true)}
-                      className="px-3 md:px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl transition-all duration-300 font-semibold text-sm md:text-base shadow-md hover:shadow-lg flex-shrink-0 leading-tight"
-                    >
-                      <span className="block md:hidden">
-                        Избери<br />Офис
-                      </span>
-                      <span className="hidden md:block whitespace-nowrap">
-                        Избери Офис
-                      </span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsOfficeSelectorOpen(true)}
+                    className="px-3 md:px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl transition-all duration-300 font-semibold text-sm md:text-base shadow-md hover:shadow-lg flex-shrink-0 leading-tight"
+                  >
+                    <span className="block md:hidden">
+                      Избери<br />Офис
+                    </span>
+                    <span className="hidden md:block whitespace-nowrap">
+                      Избери Офис
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -499,11 +539,19 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
             {/* Submit Button */}
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all mt-6"
+              disabled={isLoading}
+              whileHover={!isLoading ? { scale: 1.02 } : {}}
+              whileTap={!isLoading ? { scale: 0.98 } : {}}
+              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all mt-6 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Поръчай
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Създаване на поръчка...</span>
+                </>
+              ) : (
+                <span>Поръчай</span>
+              )}
             </motion.button>
           </form>
         </motion.div>

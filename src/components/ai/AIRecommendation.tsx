@@ -9,6 +9,7 @@ import ProductCard from './ProductCard'
 import BundleOffer from './BundleOffer'
 import ChatInterface from '@/components/chat/ChatInterface'
 import ExitIntentPopup from './ExitIntentPopup'
+import OrderSummary from '@/components/chat/OrderSummary'
 
 const testRefresh = true
 
@@ -27,6 +28,8 @@ export default function AIRecommendation({
 }: AIRecommendationProps) {
   const [showChat, setShowChat] = useState(false)
   const [initialMessage, setInitialMessage] = useState<string>('')
+  const [showOrderSummary, setShowOrderSummary] = useState(false)
+  const [orderData, setOrderData] = useState<any>(null)
 
   console.log('🎨 AIRecommendation rendered with:', recommendationData)
   
@@ -60,15 +63,28 @@ export default function AIRecommendation({
   console.log('📦 Product IDs to show:', recommendationData.productIds)
   console.log('📦 Mapped products:', productsToShow.map(p => ({ id: p.id, legacyId: p.legacyId, title: p.title })))
   
+  // Show OrderSummary if order is complete
+  if (showOrderSummary && orderData) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <OrderSummary orderData={orderData} />
+      </motion.div>
+    )
+  }
+  
   const handleButtonClick = (message: string) => {
     setInitialMessage(message)
     setShowChat(true)
   }
 
   const handleOrderComplete = (data: any) => {
-    // Това ще се използва по-късно когато се интегрира логиката за поръчка
     console.log('Order complete:', data)
-    onContinue()
+    setOrderData(data)
+    setShowOrderSummary(true)
   }
 
   // Функция за разделяне на текста на изречения по точки

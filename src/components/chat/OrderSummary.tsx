@@ -29,7 +29,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
           Вашата Поръчка е Създадена!
         </h1>
         <p className="text-gray-600 text-lg">
-          Номер на поръчка: <span className="font-bold">#{orderData.orderNumber}</span>
+          Номер на поръчка: <span className="font-bold">{orderData.orderNumber}</span>
         </p>
       </motion.div>
 
@@ -86,11 +86,43 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
         className="bg-white border-2 border-purple-100 rounded-2xl p-6 mb-6"
       >
         <h2 className="text-xl font-bold text-gray-800 mb-4">Продукти</h2>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {orderData.products.map((product: any, index: number) => (
-            <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-              <span className="text-gray-700">{product.name}</span>
-              <span className="font-semibold">{product.price.toFixed(2)} лв</span>
+            <div key={index} className="py-3 border-b border-gray-100 last:border-0">
+              <div className="flex gap-3 items-start">
+                {/* Product Image */}
+                {product.image ? (
+                  <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 border-purple-100">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg bg-gradient-secondary flex items-center justify-center border-2 border-purple-100">
+                    <span className="text-2xl">💎</span>
+                  </div>
+                )}
+                
+                {/* Product Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-800">{product.name}</p>
+                      {product.variant && product.variant !== 'Default Title' && (
+                        <p className="text-sm text-gray-600 mt-1">Вариант: {product.variant}</p>
+                      )}
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-gray-800">{product.price.toFixed(2)} лв</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {product.quantity} {product.quantity === 1 ? 'брой' : 'броя'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -140,8 +172,8 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
         className="text-center mb-6"
       >
         <p className="text-lg text-gray-700 leading-relaxed">
-          Благодаря, че сте клиент на <span className="text-gradient font-bold">Crystal Energy</span>! 
-          <br />
+          Благодаря, че сте клиент на<br className="md:hidden" /> <span className="text-gradient font-bold">Кристъл Енерджи</span>! 
+          <br /><br className="md:hidden" />
           Нашият екип ще изпрати вашите продукти в най-ранен срок!
         </p>
       </motion.div>
@@ -153,43 +185,43 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
         transition={{ delay: 0.7 }}
         className="flex flex-col items-center gap-4 max-w-md mx-auto"
       >
-        <motion.button
+        <motion.a
+          href="https://crystalenergy.shop/"
+          target="_blank"
+          rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="btn-secondary flex items-center justify-center gap-2 w-full"
         >
           <Home className="w-5 h-5" />
           Към началната страница
-        </motion.button>
+        </motion.a>
 
-        <motion.button
+        <motion.a
+          href="https://crystalenergy.shop/collections/best-sellers"
+          target="_blank"
+          rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="btn-secondary flex items-center justify-center gap-2 w-full"
         >
           <TrendingUp className="w-5 h-5" />
           Към най-продавани
-        </motion.button>
+        </motion.a>
 
-        <motion.button
+        <motion.a
+          href="https://crystalenergy.shop/blogs/news"
+          target="_blank"
+          rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="btn-secondary flex items-center justify-center gap-2 w-full"
         >
           <BookOpen className="w-5 h-5" />
           Към статиите
-        </motion.button>
+        </motion.a>
       </motion.div>
 
-      {/* Final Message */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="text-center mt-8"
-      >
-        <p className="text-2xl font-bold text-gradient">Довиждане! ✨</p>
-      </motion.div>
     </motion.div>
   )
 }
