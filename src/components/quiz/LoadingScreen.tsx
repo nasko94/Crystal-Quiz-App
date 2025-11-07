@@ -14,6 +14,7 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ name, quizData, onComplete }: LoadingScreenProps) {
   const [error, setError] = useState<string | null>(null)
+  const [countdown, setCountdown] = useState(10)
   const hasCalledOnCompleteRef = useRef(false)
 
   useEffect(() => {
@@ -77,6 +78,22 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizData])
 
+  // Countdown timer
+  useEffect(() => {
+    if (countdown <= 0) return
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [countdown])
+
   if (error) {
     return (
       <motion.div
@@ -123,6 +140,16 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
         Моля изчакай, {name}, докато нашият кристален консултант подготвя персонализираните препоръки за теб
       </p>
 
+      {countdown > 0 ? (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-lg md:text-xl text-gray-700 mb-4 font-semibold"
+        >
+          Готови сме след {countdown}
+        </motion.p>
+      ) : null}
+
       <div className="mt-8 flex justify-center gap-2">
         {[0, 1, 2].map((i) => (
           <motion.div
@@ -140,6 +167,17 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
           />
         ))}
       </div>
+
+      {countdown === 0 && (
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-base md:text-lg text-gray-600 mt-4"
+        >
+          Съвсем малко остана..
+        </motion.p>
+      )}
     </motion.div>
   )
 }

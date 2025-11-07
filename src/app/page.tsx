@@ -16,6 +16,7 @@ export default function Home() {
     happinessLevel: 5,
     lastAchievement: '',
     needs: '',
+    email: '',
     obstacles: '',
   })
   const [recommendationData, setRecommendationData] = useState<AIRecommendationData | null>(null)
@@ -51,6 +52,7 @@ export default function Home() {
       case 5:
       case 6:
       case 7:
+      case 8:
         return (
           <QuizQuestion
             key={refreshKey}
@@ -61,7 +63,7 @@ export default function Home() {
             onRecommendationComplete={handleRecommendationComplete}
           />
         )
-      case 8:
+      case 9:
         if (!recommendationData) {
           return (
             <div className="card text-center">
@@ -78,7 +80,7 @@ export default function Home() {
             onRefresh={handleRefreshStep}
           />
         )
-      case 9:
+      case 10:
         return <ChatPurchase quizData={quizData} />
       default:
         return <QuizIntro onStart={nextStep} />

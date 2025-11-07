@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { X, Check, Loader2 } from 'lucide-react'
-import { Product, ProductVariant } from '@/types/quiz'
+import { Product, ProductVariant, QuizData } from '@/types/quiz'
 
 interface OrderPopupProps {
   products: Product[]
+  quizData: QuizData
   onClose: () => void
   onOrder: (orderData: any) => void
 }
@@ -19,7 +20,7 @@ interface ProductSelection {
   selectedVariantId?: string
 }
 
-export default function OrderPopup({ products, onClose, onOrder }: OrderPopupProps) {
+export default function OrderPopup({ products, quizData, onClose, onOrder }: OrderPopupProps) {
   const [mounted, setMounted] = useState(false)
   const [selections, setSelections] = useState<ProductSelection[]>(
     products.map(product => ({
@@ -33,7 +34,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
   )
   const [formData, setFormData] = useState({
     fullName: '',
-    email: '',
+    city: '',
     phone: '',
     econt: '',
   })
@@ -72,12 +73,17 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
         // Extract the office name and full data
         if (officeData && officeData.office && officeData.office.address) {
           const officeName = officeData.office.name
+          const officeCity = officeData.office.address?.city?.name || ''
           
           // Store the full office data for later use
           setSelectedOfficeData(officeData.office)
           
-          // Update the econt field with the selected office name
-          setFormData(prev => ({ ...prev, econt: officeName }))
+          // Update the econt field with the selected office name and city field with the city
+          setFormData(prev => ({ 
+            ...prev, 
+            econt: officeName,
+            city: officeCity
+          }))
           
           // Close the office selector popup
           setIsOfficeSelectorOpen(false)
@@ -154,10 +160,13 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       }
     })
     
+    // Get city - first from office locator, then from form field
+    const city = selectedOfficeData?.address?.city?.name || formData.city || ''
+    
     // Prepare shipping address from selected office data
     const shippingAddress = selectedOfficeData ? {
       address1: selectedOfficeData.name, // Office name
-      city: selectedOfficeData.address?.city?.name || '',
+      city: city,
       country: selectedOfficeData.address?.city?.country?.code2 || 'BG',
       zip: selectedOfficeData.address?.city?.postCode || '',
       phone: formData.phone,
@@ -165,7 +174,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       lastName: lastName,
     } : {
       address1: formData.econt, // Fallback to manual input
-      city: '',
+      city: city,
       country: 'BG',
       zip: '',
       phone: formData.phone,
@@ -177,7 +186,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
     const orderPayload = {
       lineItems,
       customer: {
-        email: formData.email,
+        email: quizData.email || '', // Use email from quiz data
         firstName: firstName,
         lastName: lastName,
         phone: formData.phone,
@@ -216,7 +225,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
           firstName: firstName,
           lastName: lastName,
           phone: formData.phone,
-          email: formData.email,
+          city: city, // Use the same city logic (office locator first, then form field)
           econt: selectedOfficeData?.name || formData.econt,
           products: selectedProducts.map(sel => {
             // Get variant info if available
@@ -457,8 +466,8 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
               </div>
               <div className="border-t-2 border-gray-300 pt-2 mt-2">
                 <div className="flex justify-between">
-                  <span className="text-xl font-bold text-gray-800">Общо:</span>
-                  <span className="text-2xl font-bold text-purple-600">{total.toFixed(2)} лв</span>
+                  <span className="text-base font-semibold text-gray-800">Общо:</span>
+                  <span className="text-lg font-semibold text-gradient">{total.toFixed(2)} лв</span>
                 </div>
               </div>
             </div>
@@ -483,15 +492,15 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Имейл *
+                  Град *
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="input-field"
-                  placeholder="твой@имейл.com"
+                  placeholder="Твоят град"
                 />
               </div>
               <div>
@@ -522,7 +531,12 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
                   />
                   <button
                     type="button"
-                    onClick={() => setIsOfficeSelectorOpen(true)}
+                    onClick={() => {
+                      // Update receiverCity and receiverAddress from form data before opening
+                      setReceiverCity(formData.city || '')
+                      setReceiverAddress(formData.econt || '')
+                      setIsOfficeSelectorOpen(true)
+                    }}
                     className="px-3 md:px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl transition-all duration-300 font-semibold text-sm md:text-base shadow-md hover:shadow-lg flex-shrink-0 leading-tight"
                   >
                     <span className="block md:hidden">

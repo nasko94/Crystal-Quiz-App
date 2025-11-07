@@ -8,6 +8,7 @@ import BirthdateQuestion from './questions/BirthdateQuestion'
 import HappinessQuestion from './questions/HappinessQuestion'
 import AchievementQuestion from './questions/AchievementQuestion'
 import NeedsQuestion from './questions/NeedsQuestion'
+import EmailQuestion from './questions/EmailQuestion'
 import ObstaclesQuestion from './questions/ObstaclesQuestion'
 import LoadingScreen from './LoadingScreen'
 import { AIRecommendationData } from '@/types/quiz'
@@ -77,6 +78,14 @@ export default function QuizQuestion({
         )
       case 6:
         return (
+          <EmailQuestion
+            email={quizData.email}
+            onUpdate={(email) => onUpdate({ email })}
+            onNext={onNext}
+          />
+        )
+      case 7:
+        return (
           <ObstaclesQuestion
             obstacles={quizData.obstacles}
             quizData={quizData}
@@ -84,7 +93,7 @@ export default function QuizQuestion({
             onNext={onNext}
           />
         )
-      case 7:
+      case 8:
         return (
           <LoadingScreen 
             name={quizData.name} 
@@ -99,7 +108,7 @@ export default function QuizQuestion({
 
   return (
     <>
-      {step < 7 && step > 0 && <ProgressBar current={step} total={6} />}
+      {step < 8 && step > 0 && <ProgressBar current={step} total={7} />}
       <motion.div
         key={step}
         initial={{ opacity: 0, x: 50 }}

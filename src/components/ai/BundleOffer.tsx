@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Product } from '@/types/quiz'
+import { Product, QuizData } from '@/types/quiz'
 import OrderPopup from './OrderPopup'
 
 interface BundleOfferProps {
   products: Product[]
+  quizData: QuizData
   onOrderComplete?: (orderData: any) => void
 }
 
-export default function BundleOffer({ products, onOrderComplete }: BundleOfferProps) {
+export default function BundleOffer({ products, quizData, onOrderComplete }: BundleOfferProps) {
   const [timeLeft, setTimeLeft] = useState(600) // 10 минути = 600 секунди
   const [showOrderPopup, setShowOrderPopup] = useState(false)
 
@@ -165,6 +166,7 @@ export default function BundleOffer({ products, onOrderComplete }: BundleOfferPr
       {showOrderPopup && (
         <OrderPopup
           products={products}
+          quizData={quizData}
           onClose={() => setShowOrderPopup(false)}
           onOrder={(orderData) => {
             setShowOrderPopup(false)

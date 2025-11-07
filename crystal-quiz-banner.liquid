@@ -1,0 +1,235 @@
+<style>
+  .crystal-quiz-banner {
+    background: linear-gradient(135deg, #fdf5ff 0%, #f3e8ff 25%, #fce7f3 50%, #f9fafb 100%);
+    padding: 60px 20px;
+    margin: 40px 0;
+    border-radius: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .crystal-quiz-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(155, 89, 182, 0.1) 0%, transparent 70%);
+    animation: pulse 8s ease-in-out infinite;
+  }  
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+  
+  .crystal-quiz-banner-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .crystal-quiz-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(155, 89, 182, 0.3);
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .crystal-quiz-icon svg {
+    width: 40px;
+    height: 40px;
+    fill: white;
+  }
+  
+  .crystal-quiz-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  
+  .crystal-quiz-description {
+    font-size: 20px;
+    color: #4b5563;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  
+  .crystal-quiz-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  
+  .crystal-quiz-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    font-size: 16px;
+    color: #374151;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .crystal-quiz-feature svg {
+    width: 20px;
+    height: 20px;
+    color: #8b5cf6;
+    flex-shrink: 0;
+  }
+  
+  .crystal-quiz-cta {
+    display: inline-block;
+    padding: 18px 48px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(155, 89, 182, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .crystal-quiz-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .crystal-quiz-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(155, 89, 182, 0.5);
+  }
+  
+  .crystal-quiz-cta:hover::before {
+    left: 100%;
+  }
+  
+  .crystal-quiz-arrow {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .crystal-quiz-cta:hover .crystal-quiz-arrow {
+    transform: translateX(5px);
+  }
+  
+  @media (max-width: 768px) {
+    .crystal-quiz-banner {
+      padding: 40px 16px;
+      margin: 30px 0;
+    }
+    
+    .crystal-quiz-title {
+      font-size: 32px;
+    }
+    
+    .crystal-quiz-description {
+      font-size: 18px;
+    }
+    
+    .crystal-quiz-features {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .crystal-quiz-cta {
+      padding: 16px 36px;
+      font-size: 18px;
+    }
+  }
+</style>
+
+<div class="crystal-quiz-banner">
+  <div class="crystal-quiz-banner-content">
+    <div class="crystal-quiz-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        <path d="M5 3v4M19 17v4M3 5h4M17 19h4"/>
+        <path d="M19 3v4M5 17v4M3 19h4M17 5h4"/>
+      </svg>
+    </div>
+    
+    <h2 class="crystal-quiz-title">Кристален Тест</h2>
+    
+    <p class="crystal-quiz-description">
+      Открий своя перфектен кристал с нашия персонализиран тест
+    </p>
+    
+    <div class="crystal-quiz-features">
+      <div class="crystal-quiz-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Персонализиран</span>
+      </div>
+      <div class="crystal-quiz-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 12 20 22 4 22 4 12"/>
+          <rect x="2" y="7" width="20" height="5"/>
+          <line x1="12" y1="22" x2="12" y2="7"/>
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+        </svg>
+        <span>Безплатен</span>
+      </div>
+      <div class="crystal-quiz-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>2-3 минути</span>
+      </div>
+      <div class="crystal-quiz-feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+        <span>10% отстъпка</span>
+      </div>
+    </div>
+    
+    <a href="https://quiz.crystalenergy.shop/" class="crystal-quiz-cta" target="_blank" rel="noopener noreferrer">
+      Започни теста
+      <span class="crystal-quiz-arrow">→</span>
+    </a>
+  </div>
+</div>
+

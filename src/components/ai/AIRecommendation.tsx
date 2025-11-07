@@ -11,7 +11,7 @@ import ChatInterface from '@/components/chat/ChatInterface'
 import ExitIntentPopup from './ExitIntentPopup'
 import OrderSummary from '@/components/chat/OrderSummary'
 
-const testRefresh = true
+const testRefresh = false
 
 interface AIRecommendationProps {
   quizData: QuizData
@@ -191,7 +191,8 @@ export default function AIRecommendation({
         transition={{ delay: 1.6, duration: 0.5 }}
       >
         <BundleOffer 
-          products={productsToShow} 
+          products={productsToShow}
+          quizData={quizData}
           onOrderComplete={handleOrderComplete}
         />
       </motion.div>
