@@ -14,7 +14,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #fff5f7 0%, #f0e6ff 100%);
+  background: linear-gradient(135deg, #fdf5ff 0%, #f3e8ff 25%, #fce7f3 50%, #f9fafb 100%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
@@ -34,7 +35,7 @@ body {
   }
   
   .card {
-    @apply bg-white rounded-3xl shadow-xl p-8 backdrop-blur-sm;
+    @apply bg-white/90 rounded-3xl shadow-xl p-8 backdrop-blur-sm;
   }
   
   .input-field {
