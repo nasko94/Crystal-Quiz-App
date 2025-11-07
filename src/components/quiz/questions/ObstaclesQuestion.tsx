@@ -48,14 +48,14 @@ export default function ObstaclesQuestion({
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-xl md:text-2xl font-bold mb-6 text-center text-gray-800">
-          И накрая, има ли нещо, което да те притеснява напоследък?
+          И накрая, има ли нещо, което да искаш да споделиш?
         </h2>
 
         <div className="max-w-2xl mx-auto">
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Сподели това, което те притеснява..."
+            placeholder="Твоя история, черта, вярване..."
             className="input-field min-h-[200px] mb-2 resize-none"
             autoFocus
           />

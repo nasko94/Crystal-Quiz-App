@@ -42,6 +42,7 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
   const [isOfficeSelectorOpen, setIsOfficeSelectorOpen] = useState(false)
   const [receiverCity, setReceiverCity] = useState('')
   const [receiverAddress, setReceiverAddress] = useState('')
+  const [selectedOfficeData, setSelectedOfficeData] = useState<any>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -55,9 +56,26 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
       if (event.origin === 'https://agreeable-forest-09fdc1003.1.azurestaticapps.net') {
         const officeData = event.data
 
-        // Extract the office name from the office data
+        // Log all office data to console
+        console.log('=== Office Selection Data ===')
+        console.log('Full officeData object:', officeData)
+        console.log('Office data keys:', officeData ? Object.keys(officeData) : 'No data')
+        if (officeData && officeData.office) {
+          console.log('Office object:', officeData.office)
+          console.log('Office object keys:', Object.keys(officeData.office))
+          if (officeData.office.address) {
+            console.log('Office address:', officeData.office.address)
+          }
+        }
+        console.log('Raw event.data:', event.data)
+        console.log('===========================')
+
+        // Extract the office name and full data
         if (officeData && officeData.office && officeData.office.address) {
           const officeName = officeData.office.name
+          
+          // Store the full office data for later use
+          setSelectedOfficeData(officeData.office)
           
           // Update the econt field with the selected office name
           setFormData(prev => ({ ...prev, econt: officeName }))
@@ -119,21 +137,88 @@ export default function OrderPopup({ products, onClose, onOrder }: OrderPopupPro
   const shipping = qualifiesForDiscount ? 0 : 6 // Безплатна доставка ако има минимум 3 бройки
   const total = subtotal - discount + shipping
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const orderData = {
-      ...formData,
-      products: selectedProducts.map(sel => ({
-        ...sel.product,
+    
+    // Split fullName into firstName and lastName
+    const nameParts = formData.fullName.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || nameParts[0] // If no last name, use first name again
+    
+    // Prepare lineItems
+    const lineItems = selectedProducts.map(sel => {
+      const variantId = sel.selectedVariantId || sel.product.variantId || ''
+      return {
+        variantId: variantId.replace('gid://shopify/ProductVariant/', ''),
         quantity: sel.quantity,
-        variantId: sel.selectedVariantId || sel.product.variantId,
-      })),
-      subtotal,
-      shipping,
-      discount,
-      total,
+      }
+    })
+    
+    // Prepare shipping address from selected office data
+    const shippingAddress = selectedOfficeData ? {
+      address1: selectedOfficeData.name, // Office name
+      city: selectedOfficeData.address?.city?.name || '',
+      country: selectedOfficeData.address?.city?.country?.code2 || 'BG',
+      zip: selectedOfficeData.address?.city?.postCode || '',
+      phone: formData.phone,
+      firstName: firstName,
+      lastName: lastName,
+    } : {
+      address1: formData.econt, // Fallback to manual input
+      city: '',
+      country: 'BG',
+      zip: '',
+      phone: formData.phone,
+      firstName: firstName,
+      lastName: lastName,
     }
-    onOrder(orderData)
+    
+    // Prepare the order payload
+    const orderPayload = {
+      lineItems,
+      customer: {
+        email: formData.email,
+        firstName: firstName,
+        lastName: lastName,
+        phone: formData.phone,
+      },
+      shippingAddress,
+      discountPercentage: qualifiesForDiscount ? 10 : 0,
+      note: qualifiesForDiscount ? 'Безплатна Доставка | AI Crystal Quiz' : 'AI Crystal Quiz',
+      tags: qualifiesForDiscount ? ['COD', 'Безплатна Доставка', 'AI Crystal Quiz'] : ['COD', 'AI Crystal Quiz'],
+      paymentPending: true, // COD order
+    }
+    
+    console.log('=== Order Payload ===')
+    console.log('Order payload:', orderPayload)
+    console.log('====================')
+    
+    // Send order to API
+    try {
+      const response = await fetch('https://api.flow-fast.ai/crystal-create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderPayload),
+      })
+      
+      const result = await response.json()
+      console.log('Order creation result:', result)
+      
+      if (result.success) {
+        // Success - pass the result to parent component
+        console.log('✅ Order created successfully!')
+        onOrder({ ...orderPayload, result })
+      } else {
+        // Error - show error message
+        console.error('❌ Order creation failed:', result)
+        alert(`Грешка при създаване на поръчка: ${result.error || 'Неизвестна грешка'}`)
+      }
+    } catch (error) {
+      console.error('❌ Error creating order:', error)
+      alert('Грешка при създаване на поръчка. Моля, опитайте отново.')
+    }
   }
 
   const getFirstImage = (product: Product): string | null => {

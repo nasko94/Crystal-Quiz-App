@@ -320,7 +320,7 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
               )}
 
               <div className={`
-                w-full px-3 md:px-4 py-2 md:py-3 rounded-2xl
+                max-w-[85%] md:max-w-[70%] min-w-0 px-3 md:px-4 py-2 md:py-3 rounded-2xl
                 ${message.sender === 'ai' 
                   ? 'bg-gradient-secondary text-gray-800' 
                   : 'bg-purple-600 text-white'

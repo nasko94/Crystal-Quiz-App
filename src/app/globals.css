@@ -45,8 +45,25 @@ body {
 }
 
 /* Chat bubble formatting */
+.chat-bubble {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .chat-bubble p {
   margin: 0 0 0.5rem 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.chat-bubble a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .chat-bubble ul,
