@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
-import { QuizData, AIRecommendationData } from '@/types/quiz'
+import { QuizData, AIRecommendationData, Product } from '@/types/quiz'
 import { getNeedsLabel, getAchievementLabel, getHappinessLabel, getMorningFeelingLabel, getMissingFeelingsLabel, getReleaseLabel, getBeachActionLabel } from '@/utils/zodiac'
 
 interface LoadingScreenProps {
@@ -26,8 +26,52 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
 
     const sendRecommendedProductsEvent = async (recommendationData: AIRecommendationData) => {
       try {
-        // Вземаме първите 3 продукта
-        const products = recommendationData.fullProductData.slice(0, 3)
+        // Използваме същата логика като в AIRecommendation - мапваме productIds към реалните продукти
+        let products = (recommendationData.productIds || [])
+          .map(productId => {
+            const searchId = String(productId)
+            return recommendationData.fullProductData.find(
+              product => String(product.legacyId) === searchId || String(product.id) === searchId
+            )
+          })
+          .filter((product): product is Product => product !== undefined)
+        
+        // Ако няма мапнати продукти, създаваме 3 продукта с ГРЕШКА
+        if (products.length === 0) {
+          console.error('❌ No products matched productIds in Klaviyo event, creating ERROR products')
+          products = [
+            {
+              id: 'error-1',
+              title: 'ГРЕШКА',
+              name: 'ГРЕШКА',
+              handle: 'error-1',
+              description: 'Грешка при мапване на продукти',
+              price: 0,
+              available: false,
+            },
+            {
+              id: 'error-2',
+              title: 'ГРЕШКА',
+              name: 'ГРЕШКА',
+              handle: 'error-2',
+              description: 'Грешка при мапване на продукти',
+              price: 0,
+              available: false,
+            },
+            {
+              id: 'error-3',
+              title: 'ГРЕШКА',
+              name: 'ГРЕШКА',
+              handle: 'error-3',
+              description: 'Грешка при мапване на продукти',
+              price: 0,
+              available: false,
+            },
+          ] as Product[]
+        }
+        
+        // Вземаме първите 3 продукта (ако има повече)
+        products = products.slice(0, 3)
         
         // Форматираме продуктите
         const properties: any = {
