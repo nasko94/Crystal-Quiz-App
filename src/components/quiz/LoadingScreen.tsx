@@ -140,7 +140,7 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
         // Prepare Klaviyo profile data
         const klaviyoData = {
           email: quizData.email,
-          listId: 'TTuXNS',
+          listId: ['TTuXNS', 'XzQGEv'], // Crystal funnel List and Subscriber List
           first_name: firstName,
           customSource: 'AI QUIZ FUNNEL',
           properties: {
