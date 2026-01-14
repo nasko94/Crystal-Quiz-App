@@ -119,7 +119,7 @@ export default function BundleOffer({ products, quizData, onOrderComplete }: Bun
         <div className="text-center">
           <p className="text-sm text-gray-600 mb-1">Оригинална цена</p>
           <div className="text-2xl font-bold text-gray-400 line-through">
-            {totalPrice.toFixed(2)} лв
+            {totalPrice.toFixed(2)} €
           </div>
         </div>
         
@@ -128,7 +128,7 @@ export default function BundleOffer({ products, quizData, onOrderComplete }: Bun
         <div className="text-center">
           <p className="text-sm text-purple-600 mb-1 font-semibold">С отстъпка</p>
           <div className="text-2xl font-bold text-gradient">
-            {discountedPrice.toFixed(2)} лв
+            {discountedPrice.toFixed(2)} €
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function BundleOffer({ products, quizData, onOrderComplete }: Bun
           transition={{ delay: 1.8 }}
           className="text-sm text-gray-600"
         >
-          💰 Спестяваш {savings.toFixed(2)} лв и безплатна доставка!
+          💰 Спестяваш {savings.toFixed(2)} € и безплатна доставка!
         </motion.p>
       </div>
 

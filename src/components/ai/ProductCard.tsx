@@ -112,7 +112,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between gap-4">
           <span className="text-2xl font-bold text-gradient flex-shrink-0">
-            {displayPrice.toFixed(2)} лв
+            {displayPrice.toFixed(2)} €
           </span>
           
           {productUrl ? (

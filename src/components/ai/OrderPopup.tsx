@@ -525,10 +525,10 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
                       {/* Price */}
                       <div className="text-right">
                         <div className="font-bold text-sm md:text-lg text-gray-800">
-                          {(getProductPrice(selection) * selection.quantity).toFixed(2)} лв
+                          {(getProductPrice(selection) * selection.quantity).toFixed(2)} €
                         </div>
                         <div className="text-xs md:text-sm text-gray-500 hidden md:block">
-                          {getProductPrice(selection).toFixed(2)} лв/бр
+                          {getProductPrice(selection).toFixed(2)} €/бр
                         </div>
                       </div>
                     </div>
@@ -563,12 +563,12 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Междинна сума:</span>
-                <span className="font-semibold">{subtotal.toFixed(2)} лв</span>
+                <span className="font-semibold">{subtotal.toFixed(2)} €</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Отстъпка (10%):</span>
-                  <span className="font-semibold">-{discount.toFixed(2)} лв</span>
+                  <span className="font-semibold">-{discount.toFixed(2)} €</span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -577,14 +577,14 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
                   {shipping === 0 ? (
                     <span className="text-green-600">Безплатна</span>
                   ) : (
-                    `${shipping.toFixed(2)} лв`
+                    `${shipping.toFixed(2)} €`
                   )}
                 </span>
               </div>
               <div className="border-t-2 border-gray-300 pt-2 mt-2">
                 <div className="flex justify-between">
                   <span className="text-base font-semibold text-gray-800">Общо:</span>
-                  <span className="text-lg font-semibold text-gradient">{total.toFixed(2)} лв</span>
+                  <span className="text-lg font-semibold text-gradient">{total.toFixed(2)} €</span>
                 </div>
               </div>
             </div>

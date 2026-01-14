@@ -115,7 +115,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
                       )}
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-gray-800">{product.price.toFixed(2)} лв</p>
+                      <p className="font-bold text-gray-800">{product.price.toFixed(2)} €</p>
                       <p className="text-sm text-gray-500 mt-1">
                         {product.quantity} {product.quantity === 1 ? 'брой' : 'броя'}
                       </p>
@@ -139,22 +139,22 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
         <div className="space-y-2">
           <div className="flex justify-between text-gray-700">
             <span>Продукти:</span>
-            <span>{orderData.subtotal.toFixed(2)} лв</span>
+            <span>{orderData.subtotal.toFixed(2)} €</span>
           </div>
           <div className="flex justify-between text-gray-700">
             <span>Доставка:</span>
-            <span>{orderData.shipping.toFixed(2)} лв</span>
+            <span>{orderData.shipping.toFixed(2)} €</span>
           </div>
           {orderData.discount > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Намаление (QUIZ10):</span>
-              <span>-{orderData.discount.toFixed(2)} лв</span>
+              <span>-{orderData.discount.toFixed(2)} €</span>
             </div>
           )}
           <div className="border-t-2 border-gray-200 pt-2 mt-2">
             <div className="flex justify-between text-xl font-bold text-gradient">
               <span>Тотал:</span>
-              <span>{orderData.total.toFixed(2)} лв</span>
+              <span>{orderData.total.toFixed(2)} €</span>
             </div>
           </div>
           <div className="flex items-center gap-2 text-gray-600 mt-4">
