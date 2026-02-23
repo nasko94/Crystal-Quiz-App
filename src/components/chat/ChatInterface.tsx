@@ -6,6 +6,7 @@ import { Send, Gem, User } from 'lucide-react'
 import Image from 'next/image'
 import { QuizData, AIRecommendationData, Product } from '@/types/quiz'
 import { getHappinessLabel, getAchievementLabel, getNeedsLabel } from '@/utils/zodiac'
+import { apiUrl } from '@/config/api'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 
@@ -223,7 +224,7 @@ export default function ChatInterface({ quizData, recommendationData, initialMes
         messageLength: messageText.length,
       })
 
-      const response = await fetch('https://api.flow-fast.ai/crystal-assistant-chat', {
+      const response = await fetch(apiUrl('/crystal-assistant-chat'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

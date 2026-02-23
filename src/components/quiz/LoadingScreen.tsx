@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import { QuizData, AIRecommendationData, Product } from '@/types/quiz'
 import { getNeedsLabel, getAchievementLabel, getHappinessLabel, getMorningFeelingLabel, getMissingFeelingsLabel, getReleaseLabel, getBeachActionLabel } from '@/utils/zodiac'
+import { apiUrl } from '@/config/api'
 
 interface LoadingScreenProps {
   name: string
@@ -112,7 +113,7 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
           profileProperties,
         }
 
-        const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+        const eventResponse = await fetch(apiUrl('/crystal-klaviyo-event'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -157,7 +158,7 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
           },
         }
 
-        const klaviyoResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-profile', {
+        const klaviyoResponse = await fetch(apiUrl('/crystal-klaviyo-profile'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -198,7 +199,7 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
           obstacles: quizData.obstacles.trim() || '',
         }
 
-        const response = await fetch('https://api.flow-fast.ai/crystal-suggestions', {
+        const response = await fetch(apiUrl('/crystal-suggestions'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -344,4 +345,3 @@ export default function LoadingScreen({ name, quizData, onComplete }: LoadingScr
     </motion.div>
   )
 }
-

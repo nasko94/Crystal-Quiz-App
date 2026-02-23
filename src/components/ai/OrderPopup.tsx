@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { X, Check, Loader2 } from 'lucide-react'
 import { Product, ProductVariant, QuizData } from '@/types/quiz'
+import { apiUrl } from '@/config/api'
 
 interface OrderPopupProps {
   products: Product[]
@@ -85,7 +86,7 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
           properties,
         }
 
-        const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+        const eventResponse = await fetch(apiUrl('/crystal-klaviyo-event'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -266,7 +267,7 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
     
     // Send order to API
     try {
-      const response = await fetch('https://api.flow-fast.ai/crystal-create-order', {
+      const response = await fetch(apiUrl('/crystal-create-order'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -351,7 +352,7 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
               properties,
             }
 
-            const eventResponse = await fetch('https://api.flow-fast.ai/crystal-klaviyo-event', {
+            const eventResponse = await fetch(apiUrl('/crystal-klaviyo-event'), {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -734,4 +735,3 @@ export default function OrderPopup({ products, quizData, onClose, onOrder }: Ord
     </>
   )
 }
-
